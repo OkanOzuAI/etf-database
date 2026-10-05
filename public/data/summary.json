@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T10:56:07Z",
+  "updated_at": "2026-10-05T11:13:34Z",
   "params": {
     "years": 10,
     "sma_short": 50,
@@ -15,8 +15,8 @@
       "end": "2026-10-02",
       "rows": 2512,
       "strategy": {
-        "final_value": 24336.75,
-        "profit": 14336.75,
+        "final_value": 24336.73,
+        "profit": 14336.73,
         "total_return_pct": 143.37,
         "cagr_pct": 9.31,
         "volatility_pct": 15.1,
@@ -52,8 +52,8 @@
         "trades": 9
       },
       "buy_hold": {
-        "final_value": 67456.54,
-        "profit": 57456.54,
+        "final_value": 67456.53,
+        "profit": 57456.53,
         "total_return_pct": 574.57,
         "cagr_pct": 21.05,
         "volatility_pct": 22.56,
@@ -96,8 +96,8 @@
       "end": "2026-10-02",
       "rows": 2512,
       "strategy": {
-        "final_value": 4459.11,
-        "profit": -5540.89,
+        "final_value": 4459.12,
+        "profit": -5540.88,
         "total_return_pct": -55.41,
         "cagr_pct": -7.77,
         "volatility_pct": 23.46,
