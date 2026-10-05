@@ -1,0 +1,63 @@
+/* Tailwind yalnızca app/ ve components/ klasörlerindeki sınıf adlarını tarar
+   (.venv, notebook, data gibi klasörler taranmaz). */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+
+/* ---- Renkler: açık tema ----
+   Bütün renkler burada bir kez tanımlanır; bileşenler yalnızca değişken adını kullanır. */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; /* sayfa zemini */
+  --surface: #fcfcfb; /* kart ve grafik zemini */
+  --ink: #0b0b0b; /* ana metin */
+  --ink-2: #52514e; /* ikincil metin, eksen yazıları */
+  --grid: #e1e0d9; /* grafik ızgara çizgileri */
+  --axis: #c3c2b7; /* eksen çizgisi, sıfır çizgisi */
+  --line: rgba(11, 11, 11, 0.1); /* kart ve tablo kenarlıkları */
+  --series-1: #2a78d6; /* fiyat, Buy & Hold */
+  --series-2: #eb6834; /* kısa SMA, Strateji */
+  --series-3: #1baf7a; /* uzun SMA */
+  --good: #0ca30c; /* pozitif getiri çubuğu, al işareti */
+  --critical: #d03b3b; /* negatif getiri çubuğu, sat işareti */
+  --good-text: #006300; /* pozitif sayı metni */
+  --critical-text: #d03b3b; /* negatif sayı metni */
+}
+
+/* ---- Renkler: koyu tema ----
+   İşletim sistemi koyu moddaysa aynı değişkenler koyu değerleriyle değişir (JavaScript gerekmez). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --line: rgba(255, 255, 255, 0.1);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --good-text: #0ca30c;
+    --critical-text: #e66767;
+  }
+}
+
+/* ---- Değişkenleri Tailwind sınıflarına bağla ----
+   Örnek: bg-surface, text-ink-2, border-line, text-good-text */
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-good: var(--good);
+  --color-good-text: var(--good-text);
+  --color-critical-text: var(--critical-text);
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+}
