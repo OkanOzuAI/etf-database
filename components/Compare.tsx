@@ -1,4 +1,4 @@
-import { formatDate, formatNumber, formatPercent } from "@/lib/format";
+import { formatDate, formatList, formatNumber, formatPercent } from "@/lib/format";
 import { rangeReturn, rowsInRange } from "@/lib/range";
 import type { DateRange, Mode, PickedSymbol, Summary, SymbolFiles } from "@/lib/types";
 import GrowthChart from "./GrowthChart";
@@ -33,6 +33,14 @@ export default function Compare(props: Props) {
   const { summary, files, slots, onToggle, mode, onModeChange, range, dataRange, onRangeChange } = props;
   const modeName = mode === "strategy" ? "SMA strategy" : "Buy & Hold";
 
+  // ---- The range in use ----
+  // A symbol that was listed later has no data at the start of a long range. The range in
+  // use therefore starts on the latest first data day of the picked symbols, so that every
+  // line starts at 100 on the same day.
+  const lateSymbols = summary.symbols.filter((item) => slots.includes(item.symbol) && item.start > range.from);
+  const latestStart = lateSymbols.map((item) => item.start).sort().reverse()[0]; // undefined: no late symbol
+  const usedRange: DateRange = latestStart ? { from: latestStart, to: range.to } : range;
+
   // ---- Picked symbols whose file is loaded, in the order of their colour slots ----
   // The colour belongs to the slot, so removing one symbol does not repaint the others.
   const picked: PickedSymbol[] = [];
@@ -40,7 +48,7 @@ export default function Compare(props: Props) {
     const info = summary.symbols.find((item) => item.symbol === symbol);
     const data = symbol ? files[symbol] : undefined;
     if (info && data) {
-      picked.push({ info, data, color: slotColor(slot), rows: rowsInRange(data.daily, range) });
+      picked.push({ info, data, color: slotColor(slot), rows: rowsInRange(data.daily, usedRange) });
     }
   });
   const pickedCount = slots.filter((symbol) => symbol !== null).length;
@@ -80,14 +88,20 @@ export default function Compare(props: Props) {
       {picked.length > 0 && (
         <div aria-busy={loading} className={`space-y-6 transition-opacity ${loading ? "opacity-50" : ""}`}>
           {/* ---- The selected range: return tiles, overlay chart and table ---- */}
-          {picked[0].rows.length < 2 ? (
-            <p>The selected range has no trading days. Please pick a longer range.</p>
+          {picked.some((item) => item.rows.length < 2) ? (
+            <p>The picked symbols have no trading days together in the selected range. Please pick a later or longer range.</p>
           ) : (
             <>
               <section>
                 <h2 className="font-semibold">
                   {`${modeName} return from ${formatDate(picked[0].rows[0].date)} to ${formatDate(picked[0].rows[picked[0].rows.length - 1].date)}`}
                 </h2>
+                {/* A late symbol moved the start of the range: say so. */}
+                {latestStart && (
+                  <p className="mt-1 text-sm text-ink-2">
+                    {`The range starts on ${formatDate(latestStart)}: ${formatList(lateSymbols.map((item) => item.symbol))} ${lateSymbols.length === 1 ? "has" : "have"} no data before that day.`}
+                  </p>
+                )}
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                   {picked.map((item) => {
                     const change = rangeReturn(item.rows, mode);

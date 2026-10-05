@@ -145,7 +145,8 @@ export default function YearlyCompare({ picked, mode, dataRange }: Props) {
         </Table>
       </div>
       <p className="mt-3 text-sm text-ink-2">
-        * Not a full year: the data starts on {formatDate(dataRange.from)} and ends on {formatDate(dataRange.to)}.
+        * Not a full year: the data starts on {formatDate(dataRange.from)} and ends on {formatDate(dataRange.to)}. For a symbol
+        that was listed later, its first year is not a full year either.
       </p>
     </Card>
   );

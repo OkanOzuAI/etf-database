@@ -1,6 +1,6 @@
 # ETF & Stock Database: SMA Crossover Strategy vs Buy & Hold
 
-A small end-to-end data science project, made as homework for a course. It downloads 10 years of daily prices for 20 symbols (10 ETFs and 10 large companies) with its own code and cleans the data. Then it compares a simple moving average strategy with Buy & Hold and shows the results on a web page.
+A small end-to-end data science project, made as homework for a course. It downloads up to 10 years of daily prices for 28 symbols (10 ETFs and 18 companies) with its own code and cleans the data. Then it compares a simple moving average strategy with Buy & Hold and shows the results on a web page.
 
 **Live site:** https://etf-database.vercel.app
 
@@ -12,30 +12,38 @@ Every step (download, clean, transform, analyze, visualize) is done with the cod
 
 ### Symbols
 
-| Symbol | What it is | Group |
-|---|---|---|
-| SPY | S&P 500 | US index ETFs |
-| QQQ | Nasdaq 100 | US index ETFs |
-| DIA | Dow Jones | US index ETFs |
-| IWM | Russell 2000 | US index ETFs |
-| EFA | Developed markets (ex-US) | International ETFs |
-| EEM | Emerging markets | International ETFs |
-| TUR | Turkey (MSCI Turkey) | International ETFs |
-| GLD | Gold | Commodity ETFs |
-| SLV | Silver | Commodity ETFs |
-| TLT | Long-term US Treasury bonds | Bond ETFs |
-| NVDA | Nvidia | Companies |
-| AAPL | Apple | Companies |
-| MSFT | Microsoft | Companies |
-| GOOGL | Alphabet (Google) | Companies |
-| AMZN | Amazon | Companies |
-| META | Meta Platforms | Companies |
-| TSLA | Tesla | Companies |
-| JPM | JPMorgan Chase | Companies |
-| XOM | Exxon Mobil | Companies |
-| KO | Coca-Cola | Companies |
+| Symbol | What it is | Group | Data since |
+|---|---|---|---|
+| SPY | S&P 500 | US index ETFs | 2016 |
+| QQQ | Nasdaq 100 | US index ETFs | 2016 |
+| DIA | Dow Jones | US index ETFs | 2016 |
+| IWM | Russell 2000 | US index ETFs | 2016 |
+| EFA | Developed markets (ex-US) | International ETFs | 2016 |
+| EEM | Emerging markets | International ETFs | 2016 |
+| TUR | Turkey (MSCI Turkey) | International ETFs | 2016 |
+| GLD | Gold | Commodity ETFs | 2016 |
+| SLV | Silver | Commodity ETFs | 2016 |
+| TLT | Long-term US Treasury bonds | Bond ETFs | 2016 |
+| NVDA | Nvidia | Companies | 2016 |
+| AAPL | Apple | Companies | 2016 |
+| MSFT | Microsoft | Companies | 2016 |
+| GOOGL | Alphabet (Google) | Companies | 2016 |
+| AMZN | Amazon | Companies | 2016 |
+| META | Meta Platforms | Companies | 2016 |
+| TSLA | Tesla | Companies | 2016 |
+| JPM | JPMorgan Chase | Companies | 2016 |
+| XOM | Exxon Mobil | Companies | 2016 |
+| KO | Coca-Cola | Companies | 2016 |
+| ANET | Arista Networks | Companies | 2016 |
+| ISRG | Intuitive Surgical | Companies | 2016 |
+| FSLR | First Solar | Companies | 2016 |
+| LEU | Centrus Energy | Companies | 2016 |
+| CRWD | CrowdStrike | Companies | 2019 |
+| ASTS | AST SpaceMobile | Companies | 2019 |
+| FLNC | Fluence Energy | Companies | 2021 |
+| SN | SharkNinja | Companies | 2023 |
 
-The list is the `SYMBOLS` variable in `scripts/config.py`.
+The list is the `SYMBOLS` variable in `scripts/config.py`. Four companies (CRWD, ASTS, FLNC and SN) were listed less than 10 years ago, so they have a shorter history. Their numbers cover only the days since they were listed.
 
 ## Project structure
 
@@ -69,7 +77,7 @@ https://query1.finance.yahoo.com/v8/finance/chart/<SYMBOL>?period1=<start>&perio
 
 | Test | Result |
 |---|---|
-| Yahoo with the header `User-Agent: Mozilla/5.0` | 200, 2512 rows per symbol |
+| Yahoo with the header `User-Agent: Mozilla/5.0` | 200, 2512 rows for a symbol with the full 10 years |
 | Yahoo with the default `User-Agent` of `requests` | 429 Too Many Requests |
 | Stooq CSV address: `https://stooq.com/q/d/l/?s=spy.us&i=d` | an HTML page that asks for a browser check instead of a CSV |
 
@@ -110,7 +118,7 @@ So Yahoo is the main source. Stooq stays in the code as a backup (`fetch_stooq`)
 The site has four views:
 
 - **Overview:** one table with all symbols: last price, trailing returns, strategy and Buy & Hold total return, the winner and the current signal label.
-- **Compare:** pick up to five symbols and see them on the same chart. Every line starts at 100 on the first day of the selected date range. The table shows the return of each symbol in that range.
+- **Compare:** pick up to five symbols and see them on the same chart. Every line starts at 100 on the first day of the selected date range. The table shows the return of each symbol in that range. If a picked symbol was listed later, the range starts on its first data day.
 - **Details:** one symbol in detail: price with the two moving averages and the buy / sell markers, portfolio value of the strategy and of Buy & Hold, metric table, period returns and yearly returns.
 - **Method:** data source, cleaning steps, strategy rule and assumptions.
 
@@ -152,7 +160,9 @@ The page opens at `http://localhost:3000`. For the production version run `npm r
 
 These results cover October 5, 2016 to October 2, 2026. The data is updated every day, so the numbers on the site change over time.
 
-**Return:** Buy & Hold had a higher total return than the SMA strategy in 19 of the 20 symbols. The only symbol where the strategy won is TLT, the long-term bond fund.
+**Return:** Buy & Hold had a higher total return than the SMA strategy in 26 of the 28 symbols. The strategy won in two symbols that fell for a long time: TLT (the long-term bond fund) and FLNC.
+
+Four companies were listed later (CRWD and ASTS in 2019, FLNC in 2021, SN in 2023), so their numbers cover a shorter period than 10 years.
 
 | Symbol | Strategy | Buy & Hold | Winner |
 |---|---|---|---|
@@ -176,6 +186,14 @@ These results cover October 5, 2016 to October 2, 2026. The data is updated ever
 | JPM | 218% | 533% | Buy & Hold |
 | XOM | 127% | 190% | Buy & Hold |
 | KO | 27% | 179% | Buy & Hold |
+| ANET | 656% | 3,801% | Buy & Hold |
+| ISRG | 119% | 391% | Buy & Hold |
+| FSLR | 60% | 339% | Buy & Hold |
+| LEU | 2,187% | 3,504% | Buy & Hold |
+| CRWD | 672% | 1,760% | Buy & Hold |
+| ASTS | -28% | 498% | Buy & Hold |
+| FLNC | -61% | -78% | Strategy |
+| SN | 15% | 341% | Buy & Hold |
 
 **Why?**
 
@@ -183,11 +201,11 @@ These results cover October 5, 2016 to October 2, 2026. The data is updated ever
 - **Choppy markets.** When the price changes direction often, the strategy buys high and sells low. In TUR it made 18 trades, and in 7 of its 9 buy-sell rounds it sold below the buy price: Buy & Hold gained 19% while the strategy lost 55%. In IWM the strategy ended the 10 years where it started, while Buy & Hold gained 157%.
 - **The first 200 days.** The strategy stays in cash until SMA200 exists. SPY rose about 16% in that time; Buy & Hold earned this, the strategy did not.
 - **Long, strong rises.** The gap is largest in the fastest growing companies. With Buy & Hold, $10,000 in NVDA became about $1,396,000; with the strategy it became about $544,000. In TSLA the numbers are about $266,000 and $49,000. Every time the strategy steps out during a long rise, it gives up part of the gain.
-- **Where the strategy helped: a long fall.** TLT lost 31% in 2022. The strategy sold on February 15, 2022, stayed in cash for the rest of the year and finished that year at -9%. After 10 years Buy & Hold lost 23%, while the strategy was about flat (2%).
+- **Where the strategy helped: a long fall.** TLT lost 31% in 2022. The strategy sold on February 15, 2022, stayed in cash for the rest of the year and finished that year at -9%. After 10 years Buy & Hold lost 23%, while the strategy was about flat (2%). FLNC lost 78% since it was listed in 2021; the strategy lost 61%, so it lost less.
 
-**Risk:** The strategy is in cash part of the time, so its yearly volatility is lower in all 20 symbols (for example 15.10% against 17.95% in SPY). Even so, the Sharpe ratio is better for Buy & Hold in 19 symbols; TLT is again the exception. The worst loss (maximum drawdown) was clearly smaller with the strategy in 9 symbols, mostly the more volatile ones: META (-38.27% against -76.74%), NVDA (-37.55% against -66.34%), XOM (-37.08% against -61.01%). It was clearly larger in 3 (IWM, TUR, AAPL) and about the same in the rest. Here "clearly" means a difference of more than 5 percentage points.
+**Risk:** The strategy is in cash part of the time, so its yearly volatility is lower in all 28 symbols (for example 15.10% against 17.95% in SPY). Even so, the Sharpe ratio is better for Buy & Hold in 27 symbols; TLT is again the exception. The worst loss (maximum drawdown) was clearly smaller with the strategy in 13 symbols, mostly the more volatile ones: META (-38.27% against -76.74%), NVDA (-37.55% against -66.34%), XOM (-37.08% against -61.01%). It was clearly larger in 4 (IWM, TUR, AAPL, SN) and about the same in the rest. Here "clearly" means a difference of more than 5 percentage points.
 
-**Conclusion:** In this period and with these settings (50/200 days, 0.1% commission) the simple SMA crossover strategy earned less than Buy & Hold in rising markets. What it offered was lower risk: lower volatility in every symbol and a smaller worst loss in many volatile ones. It only won on return in an asset that fell for a long time (TLT). The result depends on the period, the settings and the assumptions; in another period it may look different.
+**Conclusion:** In this period and with these settings (50/200 days, 0.1% commission) the simple SMA crossover strategy earned less than Buy & Hold in rising markets. What it offered was lower risk: lower volatility in every symbol and a smaller worst loss in many volatile ones. It only won on return in assets that fell for a long time (TLT and FLNC). The result depends on the period, the settings and the assumptions; in another period it may look different.
 
 ## Notes
 

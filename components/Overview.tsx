@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatDate, formatDateTime, formatDollar } from "@/lib/format";
+import { formatDate, formatDateTime, formatDollar, formatMonth } from "@/lib/format";
 import type { DateRange, SignalLabel, Summary, SymbolSummary, TrailingKey, View } from "@/lib/types";
 import Segmented from "./Segmented";
 import SignalBadge from "./SignalBadge";
@@ -111,7 +111,7 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
           <div className="max-w-2xl">
             <h2 className="font-semibold">All symbols</h2>
             <p className="mt-1 text-sm text-ink-2">
-              {`Select a row to open the details of a symbol. Price return: change of the price up to the last data day (${formatDate(dataRange.to)}). Total return: the two portfolios over the full period.`}
+              {`Select a row to open the details of a symbol. Price return: change of the price up to the last data day (${formatDate(dataRange.to)}). Total return: the two portfolios over the full period. A symbol marked "since ..." was listed later, so its numbers cover a shorter period.`}
             </p>
           </div>
           <Segmented
@@ -190,6 +190,10 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
                         <button type="button" className="w-28 rounded-sm text-left sm:w-32">
                           <span className="block font-semibold text-accent group-hover:underline">{item.symbol}</span>
                           <span className="block text-xs text-ink-2">{item.name}</span>
+                          {/* Listed after the data starts: show since when it has data. */}
+                          {item.start > dataRange.from && (
+                            <span className="block text-xs text-ink-2">since {formatMonth(item.start.slice(0, 7))}</span>
+                          )}
                         </button>
                       </th>
                       <ValueCell>{formatDollar(item.last_price)}</ValueCell>

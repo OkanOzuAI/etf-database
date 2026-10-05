@@ -1,7 +1,7 @@
 """All project settings in one place. The scripts and the notebook read them from here."""
 from pathlib import Path
 
-# The symbols we study (10 ETFs and 10 large companies), each with a short name and a group
+# The symbols we study (10 ETFs and 18 companies), each with a short name and a group
 SYMBOLS = {
     "SPY": {"name": "S&P 500", "group": "US index ETFs"},
     "QQQ": {"name": "Nasdaq 100", "group": "US index ETFs"},
@@ -23,6 +23,15 @@ SYMBOLS = {
     "JPM": {"name": "JPMorgan Chase", "group": "Companies"},
     "XOM": {"name": "Exxon Mobil", "group": "Companies"},
     "KO": {"name": "Coca-Cola", "group": "Companies"},
+    "ANET": {"name": "Arista Networks", "group": "Companies"},
+    "ISRG": {"name": "Intuitive Surgical", "group": "Companies"},
+    "FSLR": {"name": "First Solar", "group": "Companies"},
+    "LEU": {"name": "Centrus Energy", "group": "Companies"},
+    # The next four were listed on the stock exchange less than 10 years ago, so they have fewer rows
+    "CRWD": {"name": "CrowdStrike", "group": "Companies"},
+    "ASTS": {"name": "AST SpaceMobile", "group": "Companies"},
+    "FLNC": {"name": "Fluence Energy", "group": "Companies"},
+    "SN": {"name": "SharkNinja", "group": "Companies"},
 }
 
 YEARS = 10                 # how many years of data to download

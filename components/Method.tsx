@@ -68,7 +68,8 @@ export default function Method({ params }: { params: Params }) {
             <li>{"Bid-ask spread, slippage and taxes are ignored; cash earns no interest."}</li>
             <li>{`Until SMA${long} exists (the first ${long} trading days) the strategy stays in cash, while Buy & Hold is invested from day one.`}</li>
             <li>{"Buy and sell markers on the price chart show the day the signal appeared."}</li>
-            <li>{"The Sharpe ratio uses a risk-free rate of 0; 252 trading days are used to annualize."}</li>
+            <li>{"The Sharpe ratio uses a risk-free rate of 0. A year is counted as 252 trading days."}</li>
+            <li>{"Some companies were listed less than 10 years ago. Their numbers cover only the days since they were listed, and a comparison starts on the first day that every picked symbol has data."}</li>
             <li>{"In the Compare view every line starts at 100 on the first day of the selected range, so symbols with very different prices can be compared."}</li>
             <li>{"Trailing returns (1M, 1Y, ...) and calendar-year returns are price returns of the symbol (adjusted close), without commission."}</li>
           </Section>

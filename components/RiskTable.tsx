@@ -16,12 +16,13 @@ export default function RiskTable({ picked, mode, modeName, dataRange, params }:
   return (
     <Card
       title="Risk and return, full period"
-      description={`${modeName} from ${formatDate(dataRange.from)} to ${formatDate(dataRange.to)}, starting with ${formatDollar(params.initial_capital, 0)}. The date range does not change this table.`}
+      description={`${modeName} over all the data of each symbol (until ${formatDate(dataRange.to)}), starting with ${formatDollar(params.initial_capital, 0)}. The date range does not change this table.`}
     >
       <Table>
         <thead>
           <tr className="border-b border-line">
             <HeadCell left>Symbol</HeadCell>
+            <HeadCell>Data since</HeadCell>
             <HeadCell>Total return</HeadCell>
             <HeadCell>CAGR</HeadCell>
             <HeadCell>Volatility</HeadCell>
@@ -36,6 +37,7 @@ export default function RiskTable({ picked, mode, modeName, dataRange, params }:
             return (
               <tr key={item.info.symbol} className="border-b border-line">
                 <PickedName item={item} withName />
+                <ValueCell>{formatDate(item.info.start)}</ValueCell>
                 <PercentCell value={metrics.total_return_pct} />
                 <PercentCell value={metrics.cagr_pct} />
                 <ValueCell>{formatPercent(metrics.volatility_pct)}</ValueCell>
