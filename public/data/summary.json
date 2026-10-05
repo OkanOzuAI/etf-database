@@ -1,0 +1,120 @@
+{
+  "updated_at": "2026-10-05T10:56:07Z",
+  "params": {
+    "years": 10,
+    "sma_short": 50,
+    "sma_long": 200,
+    "commission": 0.001,
+    "initial_capital": 10000
+  },
+  "symbols": [
+    {
+      "symbol": "SPY",
+      "name": "S&P 500",
+      "start": "2016-10-05",
+      "end": "2026-10-02",
+      "rows": 2512,
+      "strategy": {
+        "final_value": 24336.75,
+        "profit": 14336.75,
+        "total_return_pct": 143.37,
+        "cagr_pct": 9.31,
+        "volatility_pct": 15.1,
+        "sharpe": 0.67,
+        "max_drawdown_pct": -33.72,
+        "trades": 9
+      },
+      "buy_hold": {
+        "final_value": 41753.07,
+        "profit": 31753.07,
+        "total_return_pct": 317.53,
+        "cagr_pct": 15.38,
+        "volatility_pct": 17.95,
+        "sharpe": 0.89,
+        "max_drawdown_pct": -33.72,
+        "trades": 1
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Nasdaq 100",
+      "start": "2016-10-05",
+      "end": "2026-10-02",
+      "rows": 2512,
+      "strategy": {
+        "final_value": 47751.79,
+        "profit": 37751.79,
+        "total_return_pct": 377.52,
+        "cagr_pct": 16.94,
+        "volatility_pct": 19.35,
+        "sharpe": 0.91,
+        "max_drawdown_pct": -28.56,
+        "trades": 9
+      },
+      "buy_hold": {
+        "final_value": 67456.54,
+        "profit": 57456.54,
+        "total_return_pct": 574.57,
+        "cagr_pct": 21.05,
+        "volatility_pct": 22.56,
+        "sharpe": 0.96,
+        "max_drawdown_pct": -35.12,
+        "trades": 1
+      }
+    },
+    {
+      "symbol": "GLD",
+      "name": "Altın",
+      "start": "2016-10-05",
+      "end": "2026-10-02",
+      "rows": 2512,
+      "strategy": {
+        "final_value": 23543.93,
+        "profit": 13543.93,
+        "total_return_pct": 135.44,
+        "cagr_pct": 8.95,
+        "volatility_pct": 14.46,
+        "sharpe": 0.67,
+        "max_drawdown_pct": -27.06,
+        "trades": 14
+      },
+      "buy_hold": {
+        "final_value": 31442.28,
+        "profit": 21442.28,
+        "total_return_pct": 214.42,
+        "cagr_pct": 12.15,
+        "volatility_pct": 16.4,
+        "sharpe": 0.78,
+        "max_drawdown_pct": -26.4,
+        "trades": 1
+      }
+    },
+    {
+      "symbol": "TUR",
+      "name": "iShares MSCI Turkey ETF",
+      "start": "2016-10-05",
+      "end": "2026-10-02",
+      "rows": 2512,
+      "strategy": {
+        "final_value": 4459.11,
+        "profit": -5540.89,
+        "total_return_pct": -55.41,
+        "cagr_pct": -7.77,
+        "volatility_pct": 23.46,
+        "sharpe": -0.23,
+        "max_drawdown_pct": -66.71,
+        "trades": 18
+      },
+      "buy_hold": {
+        "final_value": 11941.66,
+        "profit": 1941.66,
+        "total_return_pct": 19.42,
+        "cagr_pct": 1.79,
+        "volatility_pct": 34.15,
+        "sharpe": 0.22,
+        "max_drawdown_pct": -59.25,
+        "trades": 1
+      }
+    }
+  ]
+}

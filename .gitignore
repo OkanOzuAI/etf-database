@@ -1,0 +1,24 @@
+# --- Node / Next.js ---
+/node_modules
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# --- Python ---
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# --- Üretilen veri: "python run_all.py" ile sıfırdan oluşur ---
+/data/
+
+# --- Ortam dosyaları ve Vercel ---
+.env*
+.vercel
+
+# --- İşletim sistemi ---
+.DS_Store
