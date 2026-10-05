@@ -1,15 +1,14 @@
 import Dashboard from "@/components/Dashboard";
 
-// Sunucu bileşeni: burada veri çekilmez, bu yüzden sayfa derleme sırasında statik üretilir.
-// Veriyi tarayıcıda Dashboard bileşeni public/data altındaki JSON dosyalarından okur.
+// Server component: no data is fetched here, so the page is built as a static page.
+// The Dashboard component reads the JSON files under public/data in the browser.
 export default function Home() {
   return (
-    <div className="mx-auto max-w-[1100px] px-4 py-8 sm:py-12">
-      <main>
-        <h1 className="text-2xl font-semibold sm:text-3xl">SMA Kesişim Stratejisi ve Buy & Hold Karşılaştırması</h1>
-        <Dashboard />
-      </main>
-      <footer className="mt-10 text-sm text-ink-2">Veri: Yahoo Finance · Ders ödevi · Yatırım tavsiyesi değildir.</footer>
-    </div>
+    <>
+      <Dashboard />
+      <footer className="mx-auto max-w-[1150px] px-4 pb-10 text-sm text-ink-2 sm:px-6">
+        Data: Yahoo Finance · Course homework · Not investment advice
+      </footer>
+    </>
   );
 }

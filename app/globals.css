@@ -1,63 +1,98 @@
-/* Tailwind yalnızca app/ ve components/ klasörlerindeki sınıf adlarını tarar
-   (.venv, notebook, data gibi klasörler taranmaz). */
+/* Tailwind only scans the class names in app/ and components/
+   (folders like .venv, notebook and data are not scanned). */
 @import "tailwindcss" source(none);
 @source "../app";
 @source "../components";
 
-/* ---- Renkler: açık tema ----
-   Bütün renkler burada bir kez tanımlanır; bileşenler yalnızca değişken adını kullanır. */
+/* ---- Colours: light theme ----
+   Every colour is defined once here; the components only use the variable names. */
 :root {
   color-scheme: light;
-  --page: #f9f9f7; /* sayfa zemini */
-  --surface: #fcfcfb; /* kart ve grafik zemini */
-  --ink: #0b0b0b; /* ana metin */
-  --ink-2: #52514e; /* ikincil metin, eksen yazıları */
-  --grid: #e1e0d9; /* grafik ızgara çizgileri */
-  --axis: #c3c2b7; /* eksen çizgisi, sıfır çizgisi */
-  --line: rgba(11, 11, 11, 0.1); /* kart ve tablo kenarlıkları */
-  --series-1: #2a78d6; /* fiyat, Buy & Hold */
-  --series-2: #eb6834; /* kısa SMA, Strateji */
-  --series-3: #1baf7a; /* uzun SMA */
-  --good: #0ca30c; /* pozitif getiri çubuğu, al işareti */
-  --critical: #d03b3b; /* negatif getiri çubuğu, sat işareti */
-  --good-text: #006300; /* pozitif sayı metni */
-  --critical-text: #d03b3b; /* negatif sayı metni */
+  --page: #f9f9f7; /* page background */
+  --surface: #fcfcfb; /* cards and charts */
+  --track: #efeeea; /* background of segmented controls and neutral badges */
+  --thumb: #ffffff; /* the selected button of a segmented control */
+  --hover: #f3f2ee; /* table row under the pointer */
+  --ink: #0b0b0b; /* main text */
+  --ink-2: #52514e; /* secondary text, axis labels */
+  --grid: #e1e0d9; /* chart gridlines */
+  --axis: #c3c2b7; /* axis line, zero line */
+  --line: rgba(11, 11, 11, 0.1); /* borders of cards and tables */
+  --accent: #1c5cab; /* selected controls, main button, focus ring */
+  --accent-soft: rgba(42, 120, 214, 0.12); /* background of selected controls */
+  --series-1: #2a78d6; /* price, Buy & Hold. Compare: colour slot 1 */
+  --series-2: #eb6834; /* short SMA, Strategy. Compare: colour slot 2 */
+  --series-3: #1baf7a; /* long SMA. Compare: colour slot 3 */
+  --series-4: #eda100; /* Compare: colour slot 4 */
+  --series-5: #e87ba4; /* Compare: colour slot 5 */
+  --good: #0ca30c; /* positive return bar, buy marker */
+  --critical: #d03b3b; /* negative return bar, sell marker */
+  --good-text: #006300; /* positive number text */
+  --critical-text: #b42b2b; /* negative number text */
 }
 
-/* ---- Renkler: koyu tema ----
-   İşletim sistemi koyu moddaysa aynı değişkenler koyu değerleriyle değişir (JavaScript gerekmez). */
+/* ---- Colours: dark theme ----
+   If the operating system is in dark mode, the same variables get their dark values
+   (no JavaScript needed). */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
     --page: #0d0d0d;
     --surface: #1a1a19;
+    --track: #262625;
+    --thumb: #3d3d3a;
+    --hover: #222221;
     --ink: #ffffff;
     --ink-2: #c3c2b7;
     --grid: #2c2c2a;
     --axis: #383835;
     --line: rgba(255, 255, 255, 0.1);
+    --accent: #86b6ef;
+    --accent-soft: rgba(57, 135, 229, 0.22);
     --series-1: #3987e5;
     --series-2: #d95926;
     --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
     --good-text: #0ca30c;
     --critical-text: #e66767;
   }
 }
 
-/* ---- Değişkenleri Tailwind sınıflarına bağla ----
-   Örnek: bg-surface, text-ink-2, border-line, text-good-text */
+/* ---- Connect the variables to Tailwind classes ----
+   Examples: bg-surface, text-ink-2, border-line, text-good-text */
 @theme inline {
   --color-page: var(--page);
   --color-surface: var(--surface);
+  --color-track: var(--track);
+  --color-thumb: var(--thumb);
+  --color-hover: var(--hover);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-line: var(--line);
+  --color-axis: var(--axis);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-good: var(--good);
+  --color-critical: var(--critical);
   --color-good-text: var(--good-text);
   --color-critical-text: var(--critical-text);
 }
 
+/* ---- Base styles ---- */
 body {
   background: var(--page);
   color: var(--ink);
+}
+
+/* Buttons and selects show a hand cursor (Tailwind's reset removes it). */
+button:not(:disabled),
+select {
+  cursor: pointer;
+}
+
+/* Keyboard focus: the same visible ring on every control. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

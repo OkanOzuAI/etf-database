@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 
-// Kök yerleşim: her sayfayı saran <html> ve <body>. Sayfa dili Türkçe (lang="tr").
+// Root layout: the <html> and <body> around every page. The page language is English.
 
-// Tarayıcı sekmesinde ve arama sonuçlarında görünen başlık ve açıklama.
+// Title and description shown in the browser tab and in search results.
 export const metadata: Metadata = {
-  title: "SMA Kesişim Stratejisi ve Buy & Hold Karşılaştırması",
+  title: "ETF & Stock Database",
   description:
-    "Hareketli ortalama (SMA) kesişim stratejisini Buy & Hold ile karşılaştıran ders ödevi panosu. Yatırım tavsiyesi değildir.",
+    "Course homework: a moving average (SMA) crossover strategy compared with Buy & Hold for ETFs and large stocks. Not investment advice.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr">
-      <body>{children}</body>
+    <html lang="en">
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

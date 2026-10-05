@@ -6,12 +6,12 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   globalIgnores([
-    // eslint-config-next'in varsayılan olarak yok saydıkları:
+    // The folders and files that eslint-config-next ignores by default:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Python sanal ortamı (içinde Jupyter'ın JavaScript dosyaları var):
+    // The Python virtual environment (it contains Jupyter's JavaScript files):
     ".venv/**",
   ]),
 ]);

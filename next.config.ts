@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
-// Sayfa statik üretilir ve veriyi public/data altından okur; başka ayar gerekmiyor.
+// The page is built as a static page and reads its data from public/data; no other setting is needed.
 const nextConfig: NextConfig = {
-  // "next dev" bazı ortamlarda proje köküne kendiliğinden AGENTS.md ve CLAUDE.md
-  // dosyaları yazar; projeyle ilgisi olmayan dosyalar oluşmasın diye kapatıyoruz.
+  // In some setups "next dev" writes AGENTS.md and CLAUDE.md files into the project root
+  // by itself. This switch turns that off, so no unrelated files appear in the project.
   agentRules: false,
 };
 

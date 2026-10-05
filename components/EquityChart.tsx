@@ -1,48 +1,52 @@
-import { memo } from "react";
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
-import { formatDollar } from "@/lib/format";
+import { formatDate, formatDollar } from "@/lib/format";
+import { rebasePortfolios } from "@/lib/range";
 import type { DailyRow, Params } from "@/lib/types";
 import Card from "./Card";
-import { DailyTooltip, Legend, roundTicks, toYear, yearTicks } from "./ChartParts";
+import { dateTicks, DollarTooltip, Legend, roundTicks } from "./ChartParts";
 import type { LineSeries } from "./ChartParts";
 
-// ---- Çizilecek seriler ----
-// Buy & Hold, fiyat grafiğindeki fiyat çizgisiyle aynı renktedir (varlığın kendisi).
+// ---- Series ----
+// Buy & Hold has the colour of the price line in the price chart (it is the symbol itself).
 const SERIES: LineSeries[] = [
-  { key: "strategy", label: "Strateji", color: "var(--series-2)" },
+  { key: "strategy", label: "Strategy", color: "var(--series-2)" },
   { key: "buy_hold", label: "Buy & Hold", color: "var(--series-1)" },
 ];
 
 type Props = {
-  daily: DailyRow[];
+  rows: DailyRow[]; // daily rows of the selected range
   params: Params;
 };
 
-// Portföy değeri grafiği: strateji ve Buy & Hold aynı grafikte, tek dolar ekseninde.
-function EquityChart({ daily, params }: Props) {
-  // ---- Y ekseni etiketleri: iki portföyün değerlerini birlikte kapsar ----
-  const valueTicks = roundTicks(daily.flatMap((row) => [row.strategy, row.buy_hold]));
+// Portfolio value chart: the strategy and Buy & Hold in one chart, on one dollar axis.
+export default function EquityChart({ rows, params }: Props) {
+  // Both portfolios start again with the starting capital on the first day of the range.
+  const data = rebasePortfolios(rows, params.initial_capital);
+
+  // ---- Axis ticks: the y axis covers both portfolios ----
+  const valueTicks = roundTicks(data.flatMap((row) => [row.strategy, row.buy_hold]));
+  const xAxis = dateTicks(data.map((row) => row.date));
 
   return (
     <Card
-      title="Portföy değeri: Strateji ve Buy & Hold"
-      description={`${formatDollar(params.initial_capital, 0)} başlangıç sermayesinin iki yöntemle gün gün ulaştığı değer.`}
+      title="Portfolio value: Strategy and Buy & Hold"
+      description={`Both portfolios are rebased to ${formatDollar(params.initial_capital, 0)} on ${formatDate(rows[0].date)}, the first day of the selected range. For the full period this is the original backtest.`}
     >
       <Legend items={SERIES} />
 
       <LineChart
         responsive
-        aria-label="Portföy değeri grafiği: Strateji ve Buy & Hold"
+        aria-label="Portfolio value chart: Strategy and Buy & Hold"
         className="h-72 w-full text-xs tabular-nums sm:h-96"
-        data={daily}
+        data={data}
         margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
       >
-        {/* ---- Izgara ve eksenler ---- */}
+        {/* ---- Grid and axes ---- */}
         <CartesianGrid vertical={false} stroke="var(--grid)" />
         <XAxis
           dataKey="date"
-          ticks={yearTicks(daily.map((row) => row.date))}
-          tickFormatter={toYear}
+          ticks={xAxis.ticks}
+          tickFormatter={xAxis.format}
           tick={{ fill: "var(--ink-2)" }}
           tickLine={false}
           axisLine={{ stroke: "var(--axis)" }}
@@ -57,16 +61,16 @@ function EquityChart({ daily, params }: Props) {
           axisLine={false}
         />
 
-        {/* ---- İpucu: seçilen günde iki portföyün değeri ---- */}
+        {/* ---- Tooltip: the value of both portfolios on the chosen day ---- */}
         <Tooltip
           isAnimationActive={false}
           cursor={{ stroke: "var(--axis)" }}
           content={({ active, payload }) =>
-            active && payload.length > 0 ? <DailyTooltip row={payload[0].payload} series={SERIES} /> : null
+            active && payload.length > 0 ? <DollarTooltip row={payload[0].payload} series={SERIES} /> : null
           }
         />
 
-        {/* ---- Çizgiler: 2 px, nokta yok, animasyon yok ---- */}
+        {/* ---- Lines: 2 px, no dots, no animation ---- */}
         {SERIES.map((item) => (
           <Line
             key={item.key}
@@ -82,6 +86,3 @@ function EquityChart({ daily, params }: Props) {
     </Card>
   );
 }
-
-// memo: girdiler değişmediyse yeniden çizilmez (açıklaması PriceChart.tsx dosyasının sonunda).
-export default memo(EquityChart);
