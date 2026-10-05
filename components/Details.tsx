@@ -110,7 +110,7 @@ type RangeProps = {
 function RangeSections({ info, data, range, params }: RangeProps) {
   const rows = rowsInRange(data.daily, range);
   if (rows.length < 2) {
-    return <p>The selected range has no trading days. Please pick a longer range.</p>;
+    return <p>This symbol has fewer than two trading days in the selected range. Please pick a later or longer range.</p>;
   }
 
   // ---- Returns in the range: last value / first value - 1 ----

@@ -1,4 +1,4 @@
-import { formatDate, formatList, formatNumber, formatPercent } from "@/lib/format";
+import { formatDate, formatNumber, formatPercent } from "@/lib/format";
 import { rangeReturn, rowsInRange } from "@/lib/range";
 import type { DateRange, Mode, PickedSymbol, Summary, SymbolFiles } from "@/lib/types";
 import GrowthChart from "./GrowthChart";
@@ -89,7 +89,7 @@ export default function Compare(props: Props) {
         <div aria-busy={loading} className={`space-y-6 transition-opacity ${loading ? "opacity-50" : ""}`}>
           {/* ---- The selected range: return tiles, overlay chart and table ---- */}
           {picked.some((item) => item.rows.length < 2) ? (
-            <p>The picked symbols have no trading days together in the selected range. Please pick a later or longer range.</p>
+            <p>The picked symbols have fewer than two trading days together in the selected range. Please pick a later or longer range.</p>
           ) : (
             <>
               <section>
@@ -99,7 +99,7 @@ export default function Compare(props: Props) {
                 {/* A late symbol moved the start of the range: say so. */}
                 {latestStart && (
                   <p className="mt-1 text-sm text-ink-2">
-                    {`The range starts on ${formatDate(latestStart)}: ${formatList(lateSymbols.map((item) => item.symbol))} ${lateSymbols.length === 1 ? "has" : "have"} no data before that day.`}
+                    {`The range starts on ${formatDate(latestStart)}, the first day that every picked symbol has data.`}
                   </p>
                 )}
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

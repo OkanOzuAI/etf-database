@@ -71,7 +71,7 @@ export default function Method({ params }: { params: Params }) {
             <li>{"The Sharpe ratio uses a risk-free rate of 0. A year is counted as 252 trading days."}</li>
             <li>{"Some companies were listed less than 10 years ago. Their numbers cover only the days since they were listed, and a comparison starts on the first day that every picked symbol has data."}</li>
             <li>{"In the Compare view every line starts at 100 on the first day of the selected range, so symbols with very different prices can be compared."}</li>
-            <li>{"Trailing returns (1M, 1Y, ...) and calendar-year returns are price returns of the symbol (adjusted close), without commission."}</li>
+            <li>{"Trailing returns (1M, 1Y, ...) and the calendar-year returns of a symbol are price returns (adjusted close), without commission. The calendar-year returns of the strategy come from its portfolio value, so they include commission."}</li>
           </Section>
         </div>
       </div>

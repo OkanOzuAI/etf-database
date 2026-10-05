@@ -73,7 +73,7 @@ export default function ReturnsChart({ symbol, returns, rows }: Props) {
   return (
     <Card
       title="Period returns"
-      description={`Percent change of the ${symbol} price in each day, week, month or year of the selected range. A period at the edge of the range is shown in full. Green bars are gains, red bars are losses.`}
+      description={`Percent change of the ${symbol} price in each day, week, month or year of the selected range. A period at the edge of the range is shown in full. Only the first and the last period of the data can be incomplete. Green bars are gains, red bars are losses.`}
       aside={
         <Segmented
           label="Return period"

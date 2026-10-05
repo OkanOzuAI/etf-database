@@ -66,10 +66,3 @@ export function formatDateTime(isoDateTime: string): string {
     new Date(isoDateTime),
   );
 }
-
-// ---- Lists ----
-
-// ["SN", "FLNC"] -> "SN and FLNC"
-export function formatList(items: string[]): string {
-  return new Intl.ListFormat(LOCALE, { type: "conjunction" }).format(items);
-}

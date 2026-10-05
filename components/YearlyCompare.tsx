@@ -51,6 +51,10 @@ export default function YearlyCompare({ picked, mode, dataRange }: Props) {
       <Legend items={picked.map((item) => ({ label: item.info.symbol, color: item.color, shape: "bar" }))} />
 
       <BarChart
+        // The key changes when the picked symbols change, so React builds the chart again.
+        // Without it a newly picked symbol is drawn as the last bar of every year, and the
+        // order of the bars no longer matches the legend and the table.
+        key={picked.map((item) => item.info.symbol).join(" ")}
         responsive
         aria-label="Calendar-year returns of the picked symbols"
         className="h-72 w-full text-xs tabular-nums sm:h-80"
