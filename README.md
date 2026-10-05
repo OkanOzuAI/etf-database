@@ -2,7 +2,7 @@
 
 Veri bilimi dersi için hazırlanmış, uçtan uca küçük bir proje: dört ETF'in (SPY, QQQ, GLD, TUR) son 10 yıllık günlük fiyat verisi kodla indirilir, temizlenir, basit bir hareketli ortalama stratejisi "al ve tut" (Buy & Hold) yaklaşımıyla karşılaştırılır ve sonuçlar bir web sayfasında gösterilir.
 
-**Canlı site:** _Vercel'e deploy edildikten sonra adres buraya yazılacak._
+**Canlı site:** https://etf-database.vercel.app
 
 ## Amaç
 
