@@ -1,0 +1,36 @@
+name: Veriyi güncelle
+
+on:
+  schedule:
+    - cron: "30 1 * * *"  # her gün 01:30 UTC (ABD borsası kapandıktan sonra)
+  workflow_dispatch:       # Actions sekmesinden elle de çalıştırılabilir
+
+permissions:
+  contents: write          # güncel JSON'ları commit edebilmek için
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Bağımlılıkları kur
+        run: pip install -r requirements.txt
+
+      - name: Pipeline'ı çalıştır (veri çek, temizle, backtest)
+        run: python run_all.py
+
+      - name: Güncel JSON'ları commit et
+        run: |
+          # Commit depo sahibinin adına atılır: Vercel'in ücretsiz planı yalnızca
+          # proje sahibine ait commit'leri otomatik olarak yayınlar.
+          git config user.name "${{ github.repository_owner }}"
+          git config user.email "${{ github.repository_owner_id }}+${{ github.repository_owner }}@users.noreply.github.com"
+          git add public/data
+          git diff --cached --quiet || git commit -m "Veri güncellendi (otomatik)"
+          git push
