@@ -154,7 +154,7 @@ The page opens at `http://localhost:3000`. For the production version run `npm r
 
 ## Automatic update
 
-`.github/workflows/update-data.yml` runs `python run_all.py` every day at 01:30 UTC and commits the changed JSON files. When the repository is connected to Vercel, every commit publishes the site again. If a symbol cannot be downloaded, `run_all.py` ends with an error code and nothing is committed that day, so the site keeps the data of the day before.
+`.github/workflows/update-data.yml` runs `python run_all.py` every day at 01:30 UTC and commits the changed JSON files. The repository is connected to Vercel, so every commit publishes the site again. If a symbol cannot be downloaded, `run_all.py` ends with an error code and nothing is committed that day, so the site keeps the data of the day before.
 
 ## Short comment on the results
 
