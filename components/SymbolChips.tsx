@@ -17,12 +17,13 @@ export default function SymbolChips({ symbols, slots, onToggle }: Props) {
   const full = !slots.includes(null); // every colour slot is taken
 
   return (
-    // Phone: one row that scrolls sideways inside its own box. Wider screens: the groups wrap.
+    // Phone: one row that scrolls sideways inside its own box. Wider screens: the groups and
+    // the chips inside a group wrap, so a long group does not make the page wider.
     <div className="flex gap-x-5 gap-y-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
       {groups.map((group) => (
-        <div key={group} role="group" aria-label={group} className="shrink-0">
+        <div key={group} role="group" aria-label={group} className="shrink-0 sm:shrink">
           <p className="mb-1.5 text-xs text-ink-2">{group}</p>
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5 sm:flex-wrap">
             {symbols
               .filter((item) => item.group === group)
               .map((item) => {
