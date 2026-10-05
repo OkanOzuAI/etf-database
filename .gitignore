@@ -13,12 +13,12 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
-# --- Üretilen veri: "python run_all.py" ile sıfırdan oluşur ---
+# --- Generated data: created again by "python run_all.py" ---
 /data/
 
-# --- Ortam dosyaları ve Vercel ---
+# --- Environment files and Vercel ---
 .env*
 .vercel
 
-# --- İşletim sistemi ---
+# --- Operating system ---
 .DS_Store

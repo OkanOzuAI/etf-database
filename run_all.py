@@ -1,11 +1,11 @@
-"""Tüm pipeline'ı sırayla çalıştırır: veri çekme -> temizleme -> backtest.
+"""Runs the whole pipeline in order: download -> clean -> backtest.
 
-Kullanım:  python run_all.py
+Usage:  python run_all.py
 """
 import sys
 from pathlib import Path
 
-# scripts/ klasöründeki dosyaları import edebilmek için Python yoluna ekliyoruz
+# Add the scripts/ folder to the Python path so we can import its files
 sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
 
 import backtest
@@ -14,21 +14,21 @@ import fetch_data
 
 
 def main():
-    print("1/3 Veri çekiliyor")
+    print("1/3 Downloading data")
     failed = fetch_data.main()
 
-    print("2/3 Veri temizleniyor")
+    print("2/3 Cleaning data")
     clean_data.main()
 
-    print("3/3 Backtest çalıştırılıyor")
+    print("3/3 Running the backtest")
     backtest.main()
 
     if failed:
-        # Eksik sembol varsa hata koduyla çık: otomatik güncelleme (GitHub Action)
-        # eksik veriyi yayınlamasın.
-        print(f"UYARI: indirilemeyen semboller: {', '.join(failed)}")
+        # Exit with an error code if a symbol is missing, so the automatic update
+        # (GitHub Action) does not publish incomplete data.
+        print(f"WARNING: symbols that could not be downloaded: {', '.join(failed)}")
         sys.exit(1)
-    print("Tamamlandı.")
+    print("Done.")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
-"""Adım 2 - Veri temizleme.
+"""Step 2 - Clean the data.
 
-data/raw/<SEMBOL>.csv dosyalarını okur, temizler ve data/clean/<SEMBOL>.csv
-olarak kaydeder. Her sembol için kısa bir veri kalite özeti yazdırır.
+Reads the data/raw/<SYMBOL>.csv files, cleans them and saves them as
+data/clean/<SYMBOL>.csv. Prints a short data quality summary for every symbol.
 """
 import pandas as pd
 
@@ -11,39 +11,39 @@ PRICE_COLUMNS = ["open", "high", "low", "close", "adj_close"]
 
 
 def clean(raw):
-    """Ham DataFrame'i temizler. (temiz DataFrame, kalite özeti) döndürür."""
+    """Cleans a raw DataFrame. Returns (clean DataFrame, quality summary)."""
     df = raw.copy()
 
-    # 1) Sütun adlarını sadeleştir: "Adj Close" -> "adj_close"
+    # 1) Simplify the column names: "Adj Close" -> "adj_close"
     df.columns = [name.strip().lower().replace(" ", "_") for name in df.columns]
 
-    # 2) Tarihi datetime'a çevir ve index yap (tarihi okunamayan satırlar atılır)
+    # 2) Convert the date to datetime and make it the index (rows with an unreadable date are dropped)
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.dropna(subset=["date"]).set_index("date")
 
-    # 3) Aynı güne ait tekrarlı satırları at (dosyadaki sonuncuyu tut), sonra eskiden yeniye sırala
+    # 3) Drop repeated days (keep the last one in the file), then sort from old to new
     is_duplicate = df.index.duplicated(keep="last")
     df = df[~is_duplicate].sort_index()
 
-    # 4) Düzeltilmiş kapanış sütunu yoksa (ör. Stooq) kapanışı kullan
+    # 4) If there is no adjusted close column (for example Stooq), use the close
     if "adj_close" not in df.columns:
         df["adj_close"] = df["close"]
 
-    # 5) Tip dönüşümü: tüm sütunlar sayıya çevrilir; çevrilemeyen değerler NaN (eksik) olur
+    # 5) Type conversion: every column becomes a number; values that are not numbers become NaN (missing)
     df = df[PRICE_COLUMNS + ["volume"]].apply(pd.to_numeric, errors="coerce").astype(float)
     missing = int(df.isna().sum().sum())
 
-    # 6) Fiyat sıfır ya da negatif olamaz; böyle değerleri de eksik say
+    # 6) A price cannot be zero or negative; count such values as missing too
     invalid = int((df[PRICE_COLUMNS] <= 0).sum().sum())
     df[PRICE_COLUMNS] = df[PRICE_COLUMNS].where(df[PRICE_COLUMNS] > 0)
 
-    # 7) Eksik değerleri doldur.
-    # Fiyatlarda forward-fill: eksik günün fiyatı yerine bilinen son fiyatı yazarız.
-    # Böylece sadece geçmişteki bilgi kullanılır; backfill ya da interpolasyon
-    # sonraki günün fiyatını bugüne taşıyıp backtest'i yanıltırdı.
+    # 7) Fill the missing values.
+    # Prices use forward-fill: a missing day gets the last known price.
+    # This only uses information from the past. Back-fill or interpolation
+    # would bring a later price into an earlier day and mislead the backtest.
     df[PRICE_COLUMNS] = df[PRICE_COLUMNS].ffill()
-    df["volume"] = df["volume"].fillna(0)  # hacim bilinmiyorsa 0 (analizde kullanılmıyor)
-    df = df.dropna()                       # en başta kalan, doldurulamayan satırlar
+    df["volume"] = df["volume"].fillna(0)  # unknown volume becomes 0 (volume is not used in the analysis)
+    df = df.dropna()                       # rows at the very start that could not be filled
     df["volume"] = df["volume"].astype("int64")
 
     summary = {
@@ -58,20 +58,20 @@ def clean(raw):
 
 
 def main():
-    """Ham verisi olan her sembolü temizler ve kaydeder."""
+    """Cleans and saves every symbol that has raw data."""
     config.CLEAN_DIR.mkdir(parents=True, exist_ok=True)
     for symbol in config.SYMBOLS:
         raw_path = config.RAW_DIR / f"{symbol}.csv"
         if not raw_path.exists():
-            print(f"  UYARI: {symbol} için ham veri yok, atlanıyor")
+            print(f"  WARNING: no raw data for {symbol}, skipping")
             continue
 
         df, summary = clean(pd.read_csv(raw_path))
         df.to_csv(config.CLEAN_DIR / f"{symbol}.csv")
         print(
-            f"  {symbol}: {summary['rows']} satır, {summary['start']} - {summary['end']}, "
-            f"eksik değer: {summary['missing']}, tekrarlı gün: {summary['duplicates']}, "
-            f"geçersiz fiyat: {summary['invalid_prices']}"
+            f"  {symbol}: {summary['rows']} rows, {summary['start']} to {summary['end']}, "
+            f"missing values: {summary['missing']}, repeated days: {summary['duplicates']}, "
+            f"invalid prices: {summary['invalid_prices']}"
         )
 
 
