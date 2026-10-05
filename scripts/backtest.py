@@ -88,9 +88,9 @@ def add_signals(df):
 def equity_curve(price, position):
     """Computes the portfolio value for a position series (1 = in the position, 0 = cash)."""
     daily_return = price.pct_change().fillna(0)
-    trade = position.diff().abs().fillna(0)  # 1 on the first day of a new position, else 0
+    trade = position.diff().abs().fillna(0)  # 1 on the day after a buy or a sell, else 0
     # In the position we earn the day's return. The trade itself was made at the
-    # previous day's close; we take its commission on the first day of the new position.
+    # previous day's close; we take its commission on the day after the trade.
     growth = (1 + position * daily_return) * (1 - trade * config.COMMISSION)
     return config.INITIAL_CAPITAL * growth.cumprod()
 
@@ -205,7 +205,7 @@ def analyze(symbol):
 def write_json(path, content, indent=None):
     """Writes the content to a JSON file."""
     with open(path, "w", encoding="utf-8") as file:
-        json.dump(content, file, ensure_ascii=False, indent=indent)
+        json.dump(content, file, indent=indent)
 
 
 def main():

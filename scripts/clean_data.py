@@ -33,12 +33,12 @@ def clean(raw):
     df = df[PRICE_COLUMNS + ["volume"]].apply(pd.to_numeric, errors="coerce").astype(float)
     missing = int(df.isna().sum().sum())
 
-    # 6) A price cannot be zero or negative; count such values as missing too
+    # 6) A price cannot be zero or negative: count such values, then treat them as missing
     invalid = int((df[PRICE_COLUMNS] <= 0).sum().sum())
     df[PRICE_COLUMNS] = df[PRICE_COLUMNS].where(df[PRICE_COLUMNS] > 0)
 
     # 7) Fill the missing values.
-    # Prices use forward-fill: a missing day gets the last known price.
+    # Prices use forward-fill: a missing price gets the last known price.
     # This only uses information from the past. Back-fill or interpolation
     # would bring a later price into an earlier day and mislead the backtest.
     df[PRICE_COLUMNS] = df[PRICE_COLUMNS].ffill()

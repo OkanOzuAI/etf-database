@@ -33,7 +33,7 @@ def date_range():
 
 def get_with_retry(url, params):
     """Sends a GET request; on an error it waits a little and tries again."""
-    for attempt in range(1, config.MAX_RETRIES + 1):
+    for attempt in range(1, config.MAX_TRIES + 1):
         try:
             response = requests.get(
                 url, params=params, headers=HEADERS, timeout=config.REQUEST_TIMEOUT
@@ -41,8 +41,8 @@ def get_with_retry(url, params):
             response.raise_for_status()  # treat 4xx / 5xx answers as errors
             return response
         except requests.RequestException as error:
-            print(f"    attempt {attempt}/{config.MAX_RETRIES} failed: {error}")
-            if attempt == config.MAX_RETRIES:
+            print(f"    attempt {attempt}/{config.MAX_TRIES} failed: {error}")
+            if attempt == config.MAX_TRIES:
                 raise
             time.sleep(config.SLEEP_SECONDS * attempt)  # wait a bit longer each time
 

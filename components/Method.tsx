@@ -78,7 +78,7 @@ export default function Method({ params }: { params: Params }) {
       <section className="rounded-2xl border border-line bg-surface p-4 sm:p-6">
         <h2 className="font-semibold">Disclaimer</h2>
         <p className="mt-3 text-sm">
-          This is a course homework. It is not investment advice. Past performance does not guarantee future results.
+          This project is homework for a course. It is not investment advice. Past performance does not guarantee future results.
         </p>
       </section>
     </div>

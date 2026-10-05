@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T11:36:41Z",
+  "updated_at": "2026-10-05T14:13:34Z",
   "params": {
     "years": 10,
     "sma_short": 50,
@@ -72,8 +72,8 @@
         "ALL": 575.24
       },
       "strategy": {
-        "final_value": 47751.82,
-        "profit": 37751.82,
+        "final_value": 47751.81,
+        "profit": 37751.81,
         "total_return_pct": 377.52,
         "cagr_pct": 16.94,
         "volatility_pct": 19.35,
@@ -82,8 +82,8 @@
         "trades": 9
       },
       "buy_hold": {
-        "final_value": 67456.53,
-        "profit": 57456.53,
+        "final_value": 67456.52,
+        "profit": 57456.52,
         "total_return_pct": 574.57,
         "cagr_pct": 21.05,
         "volatility_pct": 22.56,
@@ -156,8 +156,8 @@
         "ALL": 157.4
       },
       "strategy": {
-        "final_value": 10014.02,
-        "profit": 14.02,
+        "final_value": 10014.0,
+        "profit": 14.0,
         "total_return_pct": 0.14,
         "cagr_pct": 0.01,
         "volatility_pct": 17.13,
@@ -166,8 +166,8 @@
         "trades": 15
       },
       "buy_hold": {
-        "final_value": 25714.54,
-        "profit": 15714.54,
+        "final_value": 25714.55,
+        "profit": 15714.55,
         "total_return_pct": 157.15,
         "cagr_pct": 9.92,
         "volatility_pct": 23.0,
@@ -198,8 +198,8 @@
         "ALL": 135.78
       },
       "strategy": {
-        "final_value": 13442.0,
-        "profit": 3442.0,
+        "final_value": 13442.01,
+        "profit": 3442.01,
         "total_return_pct": 34.42,
         "cagr_pct": 3.01,
         "volatility_pct": 13.26,
@@ -250,8 +250,8 @@
         "trades": 13
       },
       "buy_hold": {
-        "final_value": 22248.83,
-        "profit": 12248.83,
+        "final_value": 22248.82,
+        "profit": 12248.82,
         "total_return_pct": 122.49,
         "cagr_pct": 8.33,
         "volatility_pct": 20.82,
@@ -282,8 +282,8 @@
         "ALL": 19.54
       },
       "strategy": {
-        "final_value": 4459.11,
-        "profit": -5540.89,
+        "final_value": 4459.12,
+        "profit": -5540.88,
         "total_return_pct": -55.41,
         "cagr_pct": -7.77,
         "volatility_pct": 23.46,
@@ -408,8 +408,8 @@
         "ALL": -23.28
       },
       "strategy": {
-        "final_value": 10192.76,
-        "profit": 192.76,
+        "final_value": 10192.73,
+        "profit": 192.73,
         "total_return_pct": 1.93,
         "cagr_pct": 0.19,
         "volatility_pct": 10.1,
@@ -450,8 +450,8 @@
         "ALL": 13876.54
       },
       "strategy": {
-        "final_value": 544317.16,
-        "profit": 534317.16,
+        "final_value": 544317.31,
+        "profit": 534317.31,
         "total_return_pct": 5343.17,
         "cagr_pct": 49.19,
         "volatility_pct": 40.82,
@@ -460,9 +460,9 @@
         "trades": 7
       },
       "buy_hold": {
-        "final_value": 1396256.5,
-        "profit": 1386256.5,
-        "total_return_pct": 13862.56,
+        "final_value": 1396256.79,
+        "profit": 1386256.79,
+        "total_return_pct": 13862.57,
         "cagr_pct": 63.95,
         "volatility_pct": 50.06,
         "sharpe": 1.24,
@@ -502,8 +502,8 @@
         "trades": 11
       },
       "buy_hold": {
-        "final_value": 128943.42,
-        "profit": 118943.42,
+        "final_value": 128943.41,
+        "profit": 118943.41,
         "total_return_pct": 1189.43,
         "cagr_pct": 29.17,
         "volatility_pct": 29.14,
@@ -534,8 +534,8 @@
         "ALL": 911.15
       },
       "strategy": {
-        "final_value": 55023.41,
-        "profit": 45023.41,
+        "final_value": 55023.39,
+        "profit": 45023.39,
         "total_return_pct": 450.23,
         "cagr_pct": 18.61,
         "volatility_pct": 22.54,
@@ -544,8 +544,8 @@
         "trades": 11
       },
       "buy_hold": {
-        "final_value": 101013.68,
-        "profit": 91013.68,
+        "final_value": 101013.66,
+        "profit": 91013.66,
         "total_return_pct": 910.14,
         "cagr_pct": 26.05,
         "volatility_pct": 27.77,
@@ -576,8 +576,8 @@
         "ALL": 765.59
       },
       "strategy": {
-        "final_value": 49759.07,
-        "profit": 39759.07,
+        "final_value": 49759.11,
+        "profit": 39759.11,
         "total_return_pct": 397.59,
         "cagr_pct": 17.42,
         "volatility_pct": 24.47,
@@ -660,8 +660,8 @@
         "ALL": 472.16
       },
       "strategy": {
-        "final_value": 34657.02,
-        "profit": 24657.02,
+        "final_value": 34657.04,
+        "profit": 24657.04,
         "total_return_pct": 246.57,
         "cagr_pct": 13.25,
         "volatility_pct": 27.58,
@@ -744,8 +744,8 @@
         "ALL": 533.99
       },
       "strategy": {
-        "final_value": 31798.84,
-        "profit": 21798.84,
+        "final_value": 31798.85,
+        "profit": 21798.85,
         "total_return_pct": 217.99,
         "cagr_pct": 12.28,
         "volatility_pct": 21.97,
@@ -786,8 +786,8 @@
         "ALL": 190.38
       },
       "strategy": {
-        "final_value": 22704.24,
-        "profit": 12704.24,
+        "final_value": 22704.23,
+        "profit": 12704.23,
         "total_return_pct": 127.04,
         "cagr_pct": 8.55,
         "volatility_pct": 20.0,
@@ -796,8 +796,8 @@
         "trades": 13
       },
       "buy_hold": {
-        "final_value": 29008.88,
-        "profit": 19008.88,
+        "final_value": 29008.87,
+        "profit": 19008.87,
         "total_return_pct": 190.09,
         "cagr_pct": 11.25,
         "volatility_pct": 28.38,

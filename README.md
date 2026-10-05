@@ -1,12 +1,12 @@
 # ETF & Stock Database: SMA Crossover Strategy vs Buy & Hold
 
-A small end-to-end data science project for a course homework. It downloads 10 years of daily prices for 20 symbols (10 ETFs and 10 large companies) with its own code, cleans the data, compares a simple moving average strategy with Buy & Hold, and shows the results on a web page.
+A small end-to-end data science project, made as homework for a course. It downloads 10 years of daily prices for 20 symbols (10 ETFs and 10 large companies) with its own code and cleans the data. Then it compares a simple moving average strategy with Buy & Hold and shows the results on a web page.
 
 **Live site:** https://etf-database.vercel.app
 
 ## Goal
 
-The question: does the rule "be in the position while the 50-day average is above the 200-day average, otherwise stay in cash" give a better result than simply buying and holding?
+The question: does the rule "stay invested while the 50-day average is above the 200-day average, otherwise stay in cash" give a better result than simply buying and holding?
 
 Every step (download, clean, transform, analyze, visualize) is done with the code in this repository. No ready-made data library (such as yfinance), no API key and no backtest library is used.
 
@@ -61,9 +61,9 @@ https://query1.finance.yahoo.com/v8/finance/chart/<SYMBOL>?period1=<start>&perio
 ```
 
 - The request is sent with `requests`. There is no API key, no account and no cost.
-- `period1` and `period2` are Unix seconds. The period is the last 10 years before the day the script runs. The end is the start of the day (00:00 UTC), so the unfinished trading day is never included.
+- `period1` and `period2` are Unix seconds. The period is the last 10 years. It ends at 00:00 UTC on the day the script runs, so an unfinished trading day is never included.
 - The answer is JSON: the dates and the open, high, low, close, volume and adjusted close values come as separate lists. The `fetch_yahoo` function puts them into one pandas DataFrame and converts the Unix seconds to dates in the time zone of the exchange.
-- The script waits 2 seconds between requests and tries a failed request up to 3 times. If a symbol cannot be downloaded, it prints a warning and continues with the other symbols.
+- The script waits 2 seconds between requests and tries each request up to 3 times. If a symbol cannot be downloaded, it prints a warning and continues with the other symbols.
 
 **Which source works without a key?** Tested with `requests` on October 5, 2026:
 
@@ -78,32 +78,32 @@ So Yahoo is the main source. Stooq stays in the code as a backup (`fetch_stooq`)
 ## Pipeline steps
 
 **1. Download** (`scripts/fetch_data.py`)
-For every symbol the daily open, high, low, close, adjusted close and volume are downloaded and saved unchanged under `data/raw/`.
+- For every symbol the daily open, high, low, close, adjusted close and volume are downloaded and saved unchanged under `data/raw/`.
 
 **2. Clean** (`scripts/clean_data.py`)
 - The date column becomes a datetime index; repeated days are removed and the rows are sorted by date.
 - All columns are converted to numbers; zero or negative prices are treated as invalid.
 - Missing prices are filled with the last known price (forward-fill), so no future information is used.
 - If there is no adjusted close column, the close price is used.
-- A short quality summary is printed for every symbol: number of rows, date range, number of missing values.
+- A short quality summary is printed for every symbol: number of rows, date range, and the number of missing values, repeated days and invalid prices.
 
 **3. Analysis and backtest** (`scripts/backtest.py`)
-- Daily, weekly, monthly and yearly percent returns are computed with `resample`, plus trailing returns (1 month, 1 year, ...).
-- Strategy: if SMA50 > SMA200 be in the position, otherwise stay in cash. The signal is shifted by one day (`shift(1)`): today's position is decided by the signal at yesterday's close, so there is no look-ahead bias. A 0.1% commission is paid on every buy and sell.
+- Percent returns are computed per day (`pct_change`) and per week, month and year (`resample`). Trailing returns (1 month, 1 year, ...) are computed too.
+- Strategy: if SMA50 > SMA200 be invested, otherwise stay in cash. The signal is shifted by one day (`shift(1)`): today's position is decided by the signal at yesterday's close, so there is no look-ahead bias. A 0.1% commission is paid on every buy and sell.
 - Benchmark: Buy & Hold, which buys on the first day and holds until the last day.
 - With a starting capital of $10,000, these metrics are computed for both: total return, profit, CAGR, yearly volatility, Sharpe ratio (risk-free rate 0), maximum drawdown and number of trades.
 - A signal label is computed for every symbol from the last two days: `BUY` (the signal just turned on), `HOLD` (it was already on), `SELL` (it just turned off) or `WAIT` (it was already off). The label only repeats what the SMA rule says; it is not investment advice.
 - The results are written as JSON under `public/data/`: `summary.json` (metric table, trailing returns, signal labels, settings, last update time) and one `<SYMBOL>.json` per symbol (daily price, averages, portfolio values, buy / sell days, period returns).
 
 **4. Visualization**
-The dashboard is a static page. It only reads the files in `public/data/*.json` and makes no live data calls.
+- The dashboard is a static page. It only reads the files in `public/data/*.json` and makes no live data calls.
 
 ### Assumptions
 
 - All calculations use the adjusted close (it includes dividends and splits). A trade is made at the closing price of the day the signal appears; returns start on the next trading day.
 - Each trade uses all of the capital. Bid-ask spread, slippage and taxes are ignored; cash earns no interest.
 - Until SMA200 exists (the first 200 trading days) the strategy stays in cash, while Buy & Hold is invested from day one.
-- 252 trading days are used to annualize.
+- A year is counted as 252 trading days (used for the yearly volatility and the Sharpe ratio).
 
 ## The dashboard
 
@@ -179,17 +179,17 @@ These results cover October 5, 2016 to October 2, 2026. The data is updated ever
 
 **Why?**
 
-- **Delay.** Moving averages follow the price with a delay: the strategy sells after a fall and buys back after the recovery has started. For example, in SPY the strategy sold at $235.74 on March 31, 2020 (the low was on March 23) and bought back at $291.25 on July 6, 2020. It missed a rise of about 24%.
+- **Delay.** Moving averages follow the price with a delay: the strategy sells after a fall and buys back after the recovery has started. For example, in SPY the strategy sold at $235.74 on March 31, 2020 (the low was on March 23) and bought back at $291.25 on July 6, 2020 (adjusted prices). It missed a rise of about 24%.
 - **Choppy markets.** When the price changes direction often, the strategy buys high and sells low. In TUR it made 18 trades, and in 7 of its 9 buy-sell rounds it sold below the buy price: Buy & Hold gained 19% while the strategy lost 55%. In IWM the strategy ended the 10 years where it started, while Buy & Hold gained 157%.
 - **The first 200 days.** The strategy stays in cash until SMA200 exists. SPY rose about 16% in that time; Buy & Hold earned this, the strategy did not.
 - **Long, strong rises.** The gap is largest in the fastest growing companies. With Buy & Hold, $10,000 in NVDA became about $1,396,000; with the strategy it became about $544,000. In TSLA the numbers are about $266,000 and $49,000. Every time the strategy steps out during a long rise, it gives up part of the gain.
 - **Where the strategy helped: a long fall.** TLT lost 31% in 2022. The strategy sold on February 15, 2022, stayed in cash for the rest of the year and finished that year at -9%. After 10 years Buy & Hold lost 23%, while the strategy was about flat (2%).
 
-**Risk:** The strategy is in cash part of the time, so its yearly volatility is lower in all 20 symbols (for example 15.1% against 17.9% in SPY). Even so, the Sharpe ratio is better for Buy & Hold in 19 symbols; TLT is again the exception. The worst loss (maximum drawdown) was clearly smaller with the strategy in 9 symbols, mostly the more volatile ones: META (-38.3% against -76.7%), NVDA (-37.5% against -66.3%), XOM (-37.1% against -61.0%). It was clearly larger in 3 (IWM, TUR, AAPL) and about the same in the rest.
+**Risk:** The strategy is in cash part of the time, so its yearly volatility is lower in all 20 symbols (for example 15.10% against 17.95% in SPY). Even so, the Sharpe ratio is better for Buy & Hold in 19 symbols; TLT is again the exception. The worst loss (maximum drawdown) was clearly smaller with the strategy in 9 symbols, mostly the more volatile ones: META (-38.27% against -76.74%), NVDA (-37.55% against -66.34%), XOM (-37.08% against -61.01%). It was clearly larger in 3 (IWM, TUR, AAPL) and about the same in the rest. Here "clearly" means a difference of more than 5 percentage points.
 
 **Conclusion:** In this period and with these settings (50/200 days, 0.1% commission) the simple SMA crossover strategy earned less than Buy & Hold in rising markets. What it offered was lower risk: lower volatility in every symbol and a smaller worst loss in many volatile ones. It only won on return in an asset that fell for a long time (TLT). The result depends on the period, the settings and the assumptions; in another period it may look different.
 
 ## Notes
 
 - Yahoo updates its adjusted close values back in time when new dividends are paid. Because of this the results can change slightly depending on the day the script runs.
-- This is a course homework. It is not investment advice. Past performance does not guarantee future results.
+- This project is homework for a course. It is not investment advice. Past performance does not guarantee future results.

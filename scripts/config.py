@@ -1,7 +1,7 @@
 """All project settings in one place. The scripts and the notebook read them from here."""
 from pathlib import Path
 
-# The symbols we study (10 ETFs and 10 large companies): what each one is and its group
+# The symbols we study (10 ETFs and 10 large companies), each with a short name and a group
 SYMBOLS = {
     "SPY": {"name": "S&P 500", "group": "US index ETFs"},
     "QQQ": {"name": "Nasdaq 100", "group": "US index ETFs"},
@@ -32,11 +32,11 @@ SMA_SHORT = 50             # short moving average (days)
 SMA_LONG = 200             # long moving average (days)
 COMMISSION = 0.001         # 0.1% commission on every trade
 INITIAL_CAPITAL = 10_000   # starting capital ($)
-TRADING_DAYS = 252         # trading days in a year (used to annualize)
+TRADING_DAYS = 252         # trading days in a year (turns daily values into yearly values)
 
 # Download settings
 REQUEST_TIMEOUT = 30       # longest wait for one request (seconds)
-MAX_RETRIES = 3            # how many times one request is tried
+MAX_TRIES = 3              # how many times one request is tried
 SLEEP_SECONDS = 2          # pause between requests (seconds)
 
 # Folders
