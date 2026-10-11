@@ -228,5 +228,6 @@ These results use prices until October 9, 2026. The data is updated every day, s
 
 - Yahoo updates its adjusted close values back in time when new dividends are paid. Because of this the results can change slightly depending on the day the script runs.
 - The data addresses of Yahoo and TEFAS are public but not officially documented. If one of them changes, only the functions in `scripts/fetch_data.py` must be changed.
+- The current TEFAS data addresses and the form of their requests were found by reading open-source TEFAS clients on GitHub, mainly [tefas-crawler](https://github.com/burakyilmaz321/tefas-crawler) and [pytefas](https://github.com/mirzazad/pytefas). No code was copied from them and they are not used as libraries; the download code in `scripts/fetch_data.py` is our own.
 - Use of generative AI: an AI coding assistant (Claude Code by Anthropic) was used to help write, test and review the code and the documentation of this project.
 - This project is homework for a course. It is not investment advice. Past performance does not guarantee future results.
