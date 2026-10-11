@@ -1,7 +1,8 @@
 """Step 2 - Clean the data.
 
 Reads the data/raw/<SYMBOL>.csv files, cleans them and saves them as
-data/clean/<SYMBOL>.csv. Prints a short data quality summary for every symbol.
+data/clean/<SYMBOL>.csv. Prints a short data quality summary for every file.
+The same rules are used for US ETFs, Turkish funds and the exchange rate.
 """
 import pandas as pd
 
@@ -25,26 +26,33 @@ def clean(raw):
     is_duplicate = df.index.duplicated(keep="last")
     df = df[~is_duplicate].sort_index()
 
-    # 4) If there is no adjusted close column (for example Stooq), use the close
+    # 4) If there is no adjusted close column (Stooq, TEFAS), use the close
     if "adj_close" not in df.columns:
         df["adj_close"] = df["close"]
 
-    # 5) Type conversion: every column becomes a number; values that are not numbers become NaN (missing)
-    df = df[PRICE_COLUMNS + ["volume"]].apply(pd.to_numeric, errors="coerce").astype(float)
+    # 5) Keep the columns this source has: TEFAS gives only one price per day, Yahoo also
+    #    gives open, high, low and volume. Every column becomes a number; values that are
+    #    not numbers become NaN (missing).
+    prices = [name for name in PRICE_COLUMNS if name in df.columns]
+    has_volume = "volume" in df.columns
+    columns = prices + ["volume"] if has_volume else prices
+    df = df[columns].apply(pd.to_numeric, errors="coerce").astype(float)
     missing = int(df.isna().sum().sum())
 
     # 6) A price cannot be zero or negative: count such values, then treat them as missing
-    invalid = int((df[PRICE_COLUMNS] <= 0).sum().sum())
-    df[PRICE_COLUMNS] = df[PRICE_COLUMNS].where(df[PRICE_COLUMNS] > 0)
+    invalid = int((df[prices] <= 0).sum().sum())
+    df[prices] = df[prices].where(df[prices] > 0)
 
     # 7) Fill the missing values.
     # Prices use forward-fill: a missing price gets the last known price.
     # This only uses information from the past. Back-fill or interpolation
     # would bring a later price into an earlier day and mislead the backtest.
-    df[PRICE_COLUMNS] = df[PRICE_COLUMNS].ffill()
-    df["volume"] = df["volume"].fillna(0)  # unknown volume becomes 0 (volume is not used in the analysis)
-    df = df.dropna()                       # rows at the very start that could not be filled
-    df["volume"] = df["volume"].astype("int64")
+    df[prices] = df[prices].ffill()
+    if has_volume:
+        df["volume"] = df["volume"].fillna(0)  # unknown volume becomes 0 (volume is not used in the analysis)
+    df = df.dropna()                           # rows at the very start that could not be filled
+    if has_volume:
+        df["volume"] = df["volume"].astype("int64")
 
     summary = {
         "rows": len(df),
@@ -58,9 +66,9 @@ def clean(raw):
 
 
 def main():
-    """Cleans and saves every symbol that has raw data."""
+    """Cleans and saves every instrument (and the exchange rate) that has raw data."""
     config.CLEAN_DIR.mkdir(parents=True, exist_ok=True)
-    for symbol in config.SYMBOLS:
+    for symbol in list(config.SYMBOLS) + [config.FX_NAME]:
         raw_path = config.RAW_DIR / f"{symbol}.csv"
         if not raw_path.exists():
             print(f"  WARNING: no raw data for {symbol}, skipping")

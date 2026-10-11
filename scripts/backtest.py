@@ -1,8 +1,9 @@
-"""Step 3 - Analysis and backtest.
+"""Step 3 - Analysis and backtest of every instrument on its own.
 
 Reads data/clean/<SYMBOL>.csv, computes the returns, the SMA strategy and
 Buy & Hold, and writes the results as JSON files under public/data/ for the
 dashboard. No backtest library; everything is computed with pandas / numpy.
+All numbers of an instrument are in its own currency (US dollar or Turkish lira).
 """
 import json
 
@@ -18,6 +19,9 @@ PERIODS = {
     "monthly": ("ME", "%Y-%m"),       # month end
     "yearly": ("YE", "%Y"),           # year end
 }
+
+# Prices are written with 6 decimals: a Turkish fund share can cost less than 0.01 lira
+PRICE_DECIMALS = 6
 
 # Look-back windows for the trailing returns (for example "1Y" = the last 1 year)
 TRAILING = {
@@ -129,7 +133,7 @@ def list_trades(data):
         {
             "date": date.strftime("%Y-%m-%d"),
             "type": "BUY" if row["signal"] == 1 else "SELL",
-            "price": round(float(row["price"]), 2),
+            "price": round(float(row["price"]), PRICE_DECIMALS),
         }
         for date, row in changed.iterrows()
     ]
@@ -154,7 +158,12 @@ def to_points(series, date_format):
 
 def to_records(df):
     """Turns a DataFrame into a list of rows that can be written to JSON (NaN -> null)."""
-    df = df.round(2).reset_index()
+    # Prices and averages keep more decimals than the portfolio values
+    decimals = {
+        column: PRICE_DECIMALS if column in ("price", "sma_short", "sma_long") else 2
+        for column in df.columns
+    }
+    df = df.round(decimals).reset_index()
     df["date"] = df["date"].dt.strftime("%Y-%m-%d")
     return json.loads(df.to_json(orient="records"))
 
@@ -188,10 +197,13 @@ def analyze(symbol):
         "symbol": symbol,
         "name": config.SYMBOLS[symbol]["name"],
         "group": config.SYMBOLS[symbol]["group"],
+        "type": config.SYMBOLS[symbol]["type"],          # "ETF" or "Mutual fund"
+        "market": config.SYMBOLS[symbol]["market"],      # "United States" or "Türkiye"
+        "currency": config.SYMBOLS[symbol]["currency"],  # "USD" or "TRY"
         "start": price.index[0].strftime("%Y-%m-%d"),
         "end": price.index[-1].strftime("%Y-%m-%d"),
         "rows": len(price),
-        "last_price": round(float(price.iloc[-1]), 2),
+        "last_price": round(float(price.iloc[-1]), PRICE_DECIMALS),
         "recommendation": recommendation(data["signal"]),
         # the day the signal last changed (the first day if it never changed)
         "signal_since": (signal_changes[-1] if len(signal_changes) else price.index[0]).strftime("%Y-%m-%d"),
@@ -233,6 +245,7 @@ def main():
             "updated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"),
             "params": {
                 "years": config.YEARS,
+                "tefas_months": config.TEFAS_MONTHS,
                 "sma_short": config.SMA_SHORT,
                 "sma_long": config.SMA_LONG,
                 "commission": config.COMMISSION,

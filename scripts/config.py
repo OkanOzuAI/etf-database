@@ -1,8 +1,10 @@
 """All project settings in one place. The scripts and the notebook read them from here."""
 from pathlib import Path
 
-# The symbols we study (10 ETFs and 18 companies), each with a short name and a group
-SYMBOLS = {
+# ---- Investment universe: 10 US-listed ETFs and 10 Turkish funds ----
+
+# US-listed exchange-traded funds (prices in US dollars, from Yahoo Finance)
+US_ETFS = {
     "SPY": {"name": "S&P 500", "group": "US index ETFs"},
     "QQQ": {"name": "Nasdaq 100", "group": "US index ETFs"},
     "DIA": {"name": "Dow Jones", "group": "US index ETFs"},
@@ -13,43 +15,61 @@ SYMBOLS = {
     "GLD": {"name": "Gold", "group": "Commodity ETFs"},
     "SLV": {"name": "Silver", "group": "Commodity ETFs"},
     "TLT": {"name": "Long-term US Treasury bonds", "group": "Bond ETFs"},
-    "NVDA": {"name": "Nvidia", "group": "Companies"},
-    "AAPL": {"name": "Apple", "group": "Companies"},
-    "MSFT": {"name": "Microsoft", "group": "Companies"},
-    "GOOGL": {"name": "Alphabet (Google)", "group": "Companies"},
-    "AMZN": {"name": "Amazon", "group": "Companies"},
-    "META": {"name": "Meta Platforms", "group": "Companies"},
-    "TSLA": {"name": "Tesla", "group": "Companies"},
-    "JPM": {"name": "JPMorgan Chase", "group": "Companies"},
-    "XOM": {"name": "Exxon Mobil", "group": "Companies"},
-    "KO": {"name": "Coca-Cola", "group": "Companies"},
-    "ANET": {"name": "Arista Networks", "group": "Companies"},
-    "ISRG": {"name": "Intuitive Surgical", "group": "Companies"},
-    "FSLR": {"name": "First Solar", "group": "Companies"},
-    "LEU": {"name": "Centrus Energy", "group": "Companies"},
-    # The next four were listed on the stock exchange less than 10 years ago, so they have fewer rows
-    "CRWD": {"name": "CrowdStrike", "group": "Companies"},
-    "ASTS": {"name": "AST SpaceMobile", "group": "Companies"},
-    "FLNC": {"name": "Fluence Energy", "group": "Companies"},
-    "SN": {"name": "SharkNinja", "group": "Companies"},
 }
 
-YEARS = 10                 # how many years of data to download
+# Turkish funds (prices in Turkish lira, from TEFAS). The key is the TEFAS fund code.
+# "ETF": traded on Borsa Istanbul ("bist" is its ticker there).
+# "Mutual fund": bought and sold through TEFAS at the fund's daily price.
+TURKISH_FUNDS = {
+    "ZBB": {"name": "BIST 30 stocks (Ziraat)", "group": "Turkish ETFs", "type": "ETF", "bist": "ZPX30"},
+    "FGA": {"name": "Gold in lira (QNB)", "group": "Turkish ETFs", "type": "ETF", "bist": "GLDTR"},
+    "FGS": {"name": "Silver in lira (QNB)", "group": "Turkish ETFs", "type": "ETF", "bist": "GMSTR"},
+    "FUS": {"name": "US dollar Treasury bills (QNB)", "group": "Turkish ETFs", "type": "ETF", "bist": "USDTR"},
+    "TI2": {"name": "Turkish stocks (İş Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+    "AFA": {"name": "US stocks (Ak Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+    "TI6": {"name": "Lira bonds (İş Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+    "AKE": {"name": "US dollar Eurobonds (Ak Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+    "DLY": {"name": "Lira money market (Deniz Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+    "TI7": {"name": "Balanced mixed fund (İş Portföy)", "group": "Turkish mutual funds", "type": "Mutual fund"},
+}
+
+# One dictionary with every instrument: its market, currency, type and data source
+SYMBOLS = {}
+for symbol, info in US_ETFS.items():
+    SYMBOLS[symbol] = {**info, "type": "ETF", "market": "United States", "currency": "USD", "source": "yahoo"}
+for symbol, info in TURKISH_FUNDS.items():
+    SYMBOLS[symbol] = {**info, "market": "Türkiye", "currency": "TRY", "source": "tefas"}
+
+# Exchange rate: how many Turkish lira one US dollar costs (from Yahoo Finance)
+FX_NAME = "USDTRY"            # name of our file
+FX_YAHOO_SYMBOL = "USDTRY=X"  # name of the rate on Yahoo
+REPORT_CURRENCY = "TRY"       # the whole portfolio is reported in this currency
+
+YEARS = 10                 # how many years of data to download from Yahoo
+TEFAS_MONTHS = 60          # TEFAS gives at most the last 60 months (5 years)
 
 # Strategy settings
 SMA_SHORT = 50             # short moving average (days)
 SMA_LONG = 200             # long moving average (days)
 COMMISSION = 0.001         # 0.1% commission on every trade
-INITIAL_CAPITAL = 10_000   # starting capital ($)
+INITIAL_CAPITAL = 10_000   # starting capital (in the currency of the instrument)
 TRADING_DAYS = 252         # trading days in a year (turns daily values into yearly values)
+
+# Portfolio settings (weekly decision)
+VOL_WINDOW = 63            # days of returns used for the volatility (about 3 months)
+VOL_FLOOR = 0.10           # a yearly volatility below 10% is counted as 10%
+MAX_WEIGHT = 0.20          # one instrument can be at most 20% of the portfolio
+MIN_MARKET_WEIGHT = 0.20   # each market (Türkiye, United States) gets at least 20%
 
 # Download settings
 REQUEST_TIMEOUT = 30       # longest wait for one request (seconds)
 MAX_TRIES = 3              # how many times one request is tried
-SLEEP_SECONDS = 2          # pause between requests (seconds)
+SLEEP_SECONDS = 2          # pause between Yahoo requests (seconds)
+TEFAS_SLEEP_SECONDS = 11   # pause between TEFAS requests (TEFAS allows about 6 requests per minute)
 
 # Folders
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "data" / "raw"          # downloaded raw data
 CLEAN_DIR = ROOT / "data" / "clean"      # cleaned data
 OUTPUT_DIR = ROOT / "public" / "data"    # JSON files read by the dashboard
+DOCS_DIR = ROOT / "docs"                 # data dictionary and instrument table

@@ -1,4 +1,4 @@
-"""Runs the whole pipeline in order: download -> clean -> backtest.
+"""Runs the whole pipeline in order: download -> clean -> backtest -> portfolio.
 
 Usage:  python run_all.py
 """
@@ -11,23 +11,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "scripts"))
 import backtest
 import clean_data
 import fetch_data
+import portfolio
 
 
 def main():
-    print("1/3 Downloading data")
+    print("1/4 Downloading data")
     failed = fetch_data.main()
+    if failed:
+        # Stop with an error code if something is missing, so the automatic update
+        # (GitHub Action) does not publish incomplete data or a portfolio based on it.
+        print(f"WARNING: could not be downloaded: {', '.join(failed)}")
+        sys.exit(1)
 
-    print("2/3 Cleaning data")
+    print("2/4 Cleaning data")
     clean_data.main()
 
-    print("3/3 Running the backtest")
+    print("3/4 Running the backtest of every instrument")
     backtest.main()
 
-    if failed:
-        # Exit with an error code if a symbol is missing, so the automatic update
-        # (GitHub Action) does not publish incomplete data.
-        print(f"WARNING: symbols that could not be downloaded: {', '.join(failed)}")
-        sys.exit(1)
+    print("4/4 Computing the portfolio weights")
+    portfolio.main()
     print("Done.")
 
 
