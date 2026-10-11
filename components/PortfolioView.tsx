@@ -167,7 +167,11 @@ export default function PortfolioView({ portfolio, onOpenSymbol, onOpenView }: P
         </p>
       </Card>
 
-      <WeightsChart history={portfolio.history} parts={[...markets, CASH]} />
+      <WeightsChart
+        history={portfolio.history}
+        parts={[...markets, CASH]}
+        minMarket={settings.min_market_weight * 100}
+      />
 
       {/* ---- What the numbers mean and what they do not include ---- */}
       <Card title="How to read this page">
