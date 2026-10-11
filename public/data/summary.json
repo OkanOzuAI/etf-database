@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-11T19:20:17Z",
+  "updated_at": "2026-10-11T20:00:31Z",
   "params": {
     "years": 10,
     "tefas_months": 60,
@@ -34,8 +34,8 @@
         "ALL": 327.16
       },
       "strategy": {
-        "final_value": 24587.22,
-        "profit": 14587.22,
+        "final_value": 24587.26,
+        "profit": 14587.26,
         "total_return_pct": 145.87,
         "cagr_pct": 9.42,
         "volatility_pct": 15.1,
@@ -79,8 +79,8 @@
         "ALL": 584.08
       },
       "strategy": {
-        "final_value": 47909.33,
-        "profit": 37909.33,
+        "final_value": 47909.34,
+        "profit": 37909.34,
         "total_return_pct": 379.09,
         "cagr_pct": 16.97,
         "volatility_pct": 19.36,
@@ -89,8 +89,8 @@
         "trades": 9
       },
       "buy_hold": {
-        "final_value": 68339.23,
-        "profit": 58339.23,
+        "final_value": 68339.25,
+        "profit": 58339.25,
         "total_return_pct": 583.39,
         "cagr_pct": 21.21,
         "volatility_pct": 22.56,
@@ -124,8 +124,8 @@
         "ALL": 245.28
       },
       "strategy": {
-        "final_value": 15363.66,
-        "profit": 5363.66,
+        "final_value": 15363.65,
+        "profit": 5363.65,
         "total_return_pct": 53.64,
         "cagr_pct": 4.39,
         "volatility_pct": 14.92,
@@ -134,8 +134,8 @@
         "trades": 9
       },
       "buy_hold": {
-        "final_value": 34493.14,
-        "profit": 24493.14,
+        "final_value": 34493.13,
+        "profit": 24493.13,
         "total_return_pct": 244.93,
         "cagr_pct": 13.19,
         "volatility_pct": 17.54,
@@ -169,8 +169,8 @@
         "ALL": 159.06
       },
       "strategy": {
-        "final_value": 9936.88,
-        "profit": -63.12,
+        "final_value": 9936.87,
+        "profit": -63.13,
         "total_return_pct": -0.63,
         "cagr_pct": -0.06,
         "volatility_pct": 17.13,
@@ -449,8 +449,8 @@
         "trades": 16
       },
       "buy_hold": {
-        "final_value": 7815.66,
-        "profit": -2184.34,
+        "final_value": 7815.65,
+        "profit": -2184.35,
         "total_return_pct": -21.84,
         "cagr_pct": -2.44,
         "volatility_pct": 14.82,
