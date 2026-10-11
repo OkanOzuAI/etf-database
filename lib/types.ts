@@ -1,12 +1,13 @@
 // Types of the JSON files under public/data, plus a few small types used by the page.
-// Field names are the same as in the JSON written by the Python side (scripts/backtest.py).
+// Field names are the same as in the JSON written by the Python side (scripts/backtest.py
+// and scripts/portfolio.py). Money values are in the currency of the fund (USD or TRY).
 
 // ---- summary.json ----
 
 // Performance metrics of one portfolio (the strategy or Buy & Hold)
 export type Metrics = {
-  final_value: number; // last portfolio value ($)
-  profit: number; // profit ($)
+  final_value: number; // last portfolio value
+  profit: number; // profit
   total_return_pct: number; // total return (%)
   cagr_pct: number; // compound annual growth rate (%)
   volatility_pct: number; // yearly volatility (%)
@@ -17,11 +18,12 @@ export type Metrics = {
 
 // Settings of the pipeline (scripts/config.py)
 export type Params = {
-  years: number; // years of data
+  years: number; // years of data from Yahoo (US ETFs)
+  tefas_months: number; // months of data from TEFAS (Turkish funds)
   sma_short: number; // short moving average (days)
   sma_long: number; // long moving average (days)
   commission: number; // a rate: 0.001 = 0.1%
-  initial_capital: number; // starting capital ($)
+  initial_capital: number; // starting capital, in the currency of the fund
 };
 
 // What the SMA rule says after the last close
@@ -34,10 +36,13 @@ export type SymbolSummary = {
   symbol: string; // "SPY"
   name: string; // "S&P 500"
   group: string; // "US index ETFs"
+  type: "ETF" | "Mutual fund"; // traded on an exchange, or bought and sold through TEFAS
+  market: string; // "United States" or "Türkiye"
+  currency: string; // "USD" or "TRY"
   start: string; // first data day, "2016-10-05"
   end: string; // last data day
   rows: number; // number of trading days
-  last_price: number; // last adjusted close ($)
+  last_price: number; // last adjusted close
   recommendation: SignalLabel;
   signal_since: string; // the day the signal last changed
   // Price return (%) over each look-back window. A window is missing if the data is shorter than it.
@@ -57,11 +62,11 @@ export type Summary = {
 // One trading day: price, moving averages and the value of the two portfolios
 export type DailyRow = {
   date: string; // "2016-10-05"
-  price: number; // adjusted close ($)
+  price: number; // adjusted close
   sma_short: number | null; // null until the average exists
   sma_long: number | null;
-  strategy: number; // value of the strategy portfolio ($)
-  buy_hold: number; // value of the Buy & Hold portfolio ($)
+  strategy: number; // value of the strategy portfolio
+  buy_hold: number; // value of the Buy & Hold portfolio
 };
 
 // A day the signal changed
@@ -90,10 +95,56 @@ export type SymbolData = {
 // The <SYMBOL>.json files that are already in memory, by symbol
 export type SymbolFiles = Partial<Record<string, SymbolData>>;
 
+// ---- portfolio.json ----
+
+// One fund in the weekly portfolio decision
+export type Holding = {
+  symbol: string;
+  name: string;
+  type: "ETF" | "Mutual fund";
+  market: string; // "United States" or "Türkiye"
+  currency: string; // "USD" or "TRY"
+  weight: number; // target weight (%)
+  change: number; // difference from the weight of the week before (percentage points)
+  uptrend: boolean; // is the short moving average above the long one?
+  volatility: number; // yearly volatility (%)
+};
+
+// Shares of the portfolio per market and in cash (%). The keys are "Türkiye", "United States" and "CASH".
+export type MarketTotals = Record<string, number>;
+
+// One weekly decision in the history
+export type PortfolioWeek = {
+  date: string; // decision day (a Friday)
+  totals: MarketTotals;
+  weights: Record<string, number>; // weight of every fund and of "CASH" (%)
+};
+
+export type Portfolio = {
+  updated_at: string; // when the pipeline last ran (UTC, ISO 8601)
+  version: string; // version of the algorithm
+  decision_day: string; // the last decision day
+  data_until: Record<string, string>; // last day with a price in each market
+  report_currency: string; // "TRY"
+  usdtry: number; // lira per US dollar on the decision day
+  settings: {
+    sma_short: number;
+    sma_long: number;
+    vol_window: number; // days of returns used for the volatility
+    vol_floor: number; // a rate: 0.1 = 10%
+    max_weight: number; // a rate: largest weight of one fund
+    min_market_weight: number; // a rate: smallest total weight of one market
+  };
+  holdings: Holding[]; // every fund, also the ones with a weight of 0
+  cash: number; // cash weight (%)
+  totals: MarketTotals;
+  history: PortfolioWeek[];
+};
+
 // ---- Page ----
 
-// The four views of the page
-export type View = "overview" | "compare" | "details" | "method";
+// The five views of the page
+export type View = "portfolio" | "overview" | "compare" | "details" | "method";
 
 // Which portfolio the Compare view shows. The names are also the field names in the JSON.
 export type Mode = "buy_hold" | "strategy";

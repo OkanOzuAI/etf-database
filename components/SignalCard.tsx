@@ -1,4 +1,4 @@
-import { formatDate, formatDollar } from "@/lib/format";
+import { formatDate, formatPrice } from "@/lib/format";
 import type { DailyRow, Params, SignalLabel, SymbolSummary } from "@/lib/types";
 import AdviceNote from "./AdviceNote";
 import SignalBadge from "./SignalBadge";
@@ -12,9 +12,9 @@ function explain(label: SignalLabel, short: string, long: string): string {
   return `${short} is below ${long}, so the rule says: stay in cash.`;
 }
 
-// An average in dollars, or a dash if it does not exist yet (not enough days of data).
-function formatAverage(value: number | null): string {
-  return value === null ? "–" : formatDollar(value);
+// An average as a price, or a dash if it does not exist yet (not enough days of data).
+function formatAverage(value: number | null, currency: string): string {
+  return value === null ? "–" : formatPrice(value, currency);
 }
 
 type Props = {
@@ -47,7 +47,7 @@ export default function SignalCard({ info, lastDay, params }: Props) {
             <AdviceNote />
           </p>
           <p className="mt-2 text-sm text-ink-2">
-            {`Last close: ${formatDollar(lastDay.price)} · ${short}: ${formatAverage(lastDay.sma_short)} · ${long}: ${formatAverage(lastDay.sma_long)}`}
+            {`Last close: ${formatPrice(lastDay.price, info.currency)} · ${short}: ${formatAverage(lastDay.sma_short, info.currency)} · ${long}: ${formatAverage(lastDay.sma_long, info.currency)}`}
           </p>
         </div>
       </div>

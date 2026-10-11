@@ -6,9 +6,9 @@ import "./globals.css";
 
 // Title and description shown in the browser tab and in search results.
 export const metadata: Metadata = {
-  title: "ETF & Stock Database",
+  title: "ETF & Fund Portfolio",
   description:
-    "Course homework: a moving average (SMA) crossover strategy compared with Buy & Hold for ETFs and large stocks. Not investment advice.",
+    "Course project: a price-based algorithm that builds one weekly portfolio from Turkish funds and US-listed ETFs. Not investment advice.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

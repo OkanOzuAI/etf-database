@@ -74,7 +74,8 @@ export type GrowthRow = {
 // Builds the rows of the "Growth of 100" chart. Every symbol is rebased to 100 on the first
 // day of the range: value / value on the first day * 100.
 export function growthRows(picked: PickedSymbol[], mode: Mode): GrowthRow[] {
-  // The symbols share the same trading days. Collecting by date also works if one has a gap.
+  // US ETFs and Turkish funds have different holidays, so a symbol can have no row on some days.
+  // Collecting by date handles this.
   const byDate = new Map<string, GrowthRow>();
   for (const item of picked) {
     const firstValue = item.rows[0][mode];

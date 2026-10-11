@@ -1,4 +1,4 @@
-// Number, percent, dollar and date formatting.
+// Number, percent, money and date formatting.
 // Everything uses the browser's Intl API with US English rules: 1,234.56 and Oct 2, 2026.
 
 const LOCALE = "en-US";
@@ -26,15 +26,23 @@ export function formatRate(rate: number): string {
   return new Intl.NumberFormat(LOCALE, { style: "percent", maximumFractionDigits: 3 }).format(rate);
 }
 
-// Dollar: 24336.74 -> "$24,336.74". With signed=true: "+$14,336.73".
-export function formatDollar(value: number, digits = 2, signed = false): string {
+// Money in the currency of the fund: 24336.74 -> "$24,336.74" (USD) or "₺24,336.74" (TRY).
+// With signed=true: "+$14,336.73".
+export function formatMoney(value: number, currency: string, digits = 2, signed = false): string {
   return new Intl.NumberFormat(LOCALE, {
     style: "currency",
-    currency: "USD",
+    currency,
+    currencyDisplay: "narrowSymbol", // the short sign: "$" and "₺"
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
     signDisplay: signed ? "exceptZero" : "negative",
   }).format(value);
+}
+
+// Price of one share: "$778.57". A share of a Turkish fund can cost less than one lira,
+// so a price below 1 is written with 6 decimals: "₺0.119960".
+export function formatPrice(value: number, currency: string): string {
+  return formatMoney(value, currency, Math.abs(value) < 1 ? 6 : 2);
 }
 
 // ---- Dates ----

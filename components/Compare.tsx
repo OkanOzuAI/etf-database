@@ -34,7 +34,7 @@ export default function Compare(props: Props) {
   const modeName = mode === "strategy" ? "SMA strategy" : "Buy & Hold";
 
   // ---- The range in use ----
-  // A symbol that was listed later has no data at the start of a long range. The range in
+  // A symbol whose data starts later has no data at the start of a long range. The range in
   // use therefore starts on the latest first data day of the picked symbols, so that every
   // line starts at 100 on the same day.
   const lateSymbols = summary.symbols.filter((item) => slots.includes(item.symbol) && item.start > range.from);
@@ -52,13 +52,15 @@ export default function Compare(props: Props) {
     }
   });
   const pickedCount = slots.filter((symbol) => symbol !== null).length;
+  // US ETFs are priced in dollars and Turkish funds in lira: are both kinds picked?
+  const mixedCurrencies = new Set(picked.map((item) => item.info.currency)).size > 1;
   // While a picked file is still loading, the symbols that are ready stay on screen (dimmed).
   const loading = picked.length < pickedCount;
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Compare symbols</h1>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Compare funds</h1>
         <p className="mt-2 max-w-3xl text-ink-2">
           {`Pick up to ${slots.length} symbols and a date range. Every line starts at 100, so symbols with very different prices can be compared.`}
         </p>
@@ -100,6 +102,12 @@ export default function Compare(props: Props) {
                 {latestStart && (
                   <p className="mt-1 text-sm text-ink-2">
                     {`The range starts on ${formatDate(latestStart)}, the first day that every picked symbol has data.`}
+                  </p>
+                )}
+                {/* Dollar and lira funds together: say that the returns are not in one currency. */}
+                {mixedCurrencies && (
+                  <p className="mt-1 text-sm text-ink-2">
+                    {"The picked symbols are priced in different currencies. Every return is in the symbol's own currency (US dollar or Turkish lira), so a lira return and a dollar return cannot be compared directly."}
                   </p>
                 )}
                 <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

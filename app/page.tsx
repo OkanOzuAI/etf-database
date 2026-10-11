@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Dashboard />
       <footer className="mx-auto max-w-[1150px] px-4 pb-10 text-sm text-ink-2 sm:px-6">
-        Data: Yahoo Finance · Course homework · Not investment advice
+        Data: Yahoo Finance and TEFAS · Course project · Not investment advice
       </footer>
     </>
   );

@@ -2,11 +2,12 @@
 // "use client": this file and the components it imports run in the browser (useState, useEffect, fetch).
 
 import { useEffect, useRef, useState } from "react";
-import type { DateRange, Mode, Summary, SymbolData, SymbolFiles, SymbolSummary, View } from "@/lib/types";
+import type { DateRange, Mode, Portfolio, Summary, SymbolData, SymbolFiles, SymbolSummary, View } from "@/lib/types";
 import Compare from "./Compare";
 import Details from "./Details";
 import Method from "./Method";
 import Overview from "./Overview";
+import PortfolioView from "./PortfolioView";
 import TopBar from "./TopBar";
 
 const MAX_PICKS = 5; // Compare: one colour slot per picked symbol (--series-1 ... --series-5)
@@ -30,36 +31,38 @@ function defaultSlots(symbols: SymbolSummary[]): (string | null)[] {
   return Array.from({ length: MAX_PICKS }, (_, slot) => picks[slot] ?? null);
 }
 
-// Entry of the page: loads summary.json once, then shows the site.
+// Entry of the page: loads summary.json and portfolio.json once, then shows the site.
 export default function Dashboard() {
   const [summary, setSummary] = useState<Summary | null>(null); // summary.json
-  const [failed, setFailed] = useState(false); // could the file not be loaded?
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null); // portfolio.json
+  const [failed, setFailed] = useState(false); // could a file not be loaded?
 
   useEffect(() => {
-    loadJson<Summary>("/data/summary.json")
-      .then((data) => {
-        if (data.symbols.length === 0) {
+    Promise.all([loadJson<Summary>("/data/summary.json"), loadJson<Portfolio>("/data/portfolio.json")])
+      .then(([summaryData, portfolioData]) => {
+        if (summaryData.symbols.length === 0) {
           throw new Error("summary.json has no symbols");
         }
-        setSummary(data);
+        setSummary(summaryData);
+        setPortfolio(portfolioData);
       })
       .catch(() => setFailed(true));
   }, []);
 
   // ---- Plain text for the first load and for an error ----
-  if (failed || !summary) {
+  if (failed || !summary || !portfolio) {
     return (
       <p className="mx-auto max-w-[1150px] px-4 py-10 sm:px-6">
         {failed ? "The data could not be loaded." : "Loading data…"}
       </p>
     );
   }
-  return <Site summary={summary} />;
+  return <Site summary={summary} portfolio={portfolio} />;
 }
 
-// The site: top bar and the four views. It keeps everything the views share:
+// The site: top bar and the five views. It keeps everything the views share:
 // the open view, the date range, the picked symbols and the loaded symbol files.
-function Site({ summary }: { summary: Summary }) {
+function Site({ summary, portfolio }: { summary: Summary; portfolio: Portfolio }) {
   const { symbols } = summary;
 
   // ---- Data range: the earliest first day and the latest last day of all symbols ----
@@ -70,7 +73,7 @@ function Site({ summary }: { summary: Summary }) {
   };
 
   // ---- State ----
-  const [view, setView] = useState<View>("overview"); // the view on screen
+  const [view, setView] = useState<View>("portfolio"); // the view on screen
   const [range, setRange] = useState(dataRange); // date range of Compare and Details (at first: all data)
   const [mode, setMode] = useState<Mode>("buy_hold"); // Compare: which portfolio is compared
   const [slots, setSlots] = useState(() => defaultSlots(symbols)); // Compare: picked symbol per colour slot
@@ -132,6 +135,16 @@ function Site({ summary }: { summary: Summary }) {
       <main className="mx-auto max-w-[1150px] px-4 py-6 sm:px-6 sm:py-10">
         {failed && <p>The data could not be loaded.</p>}
 
+        {!failed && view === "portfolio" && (
+          <PortfolioView
+            portfolio={portfolio}
+            onOpenView={openView}
+            onOpenSymbol={(symbol) => {
+              selectSymbol(symbol);
+              openView("details");
+            }}
+          />
+        )}
         {!failed && view === "overview" && (
           <Overview
             summary={summary}
@@ -168,7 +181,7 @@ function Site({ summary }: { summary: Summary }) {
             onRangeChange={setRange}
           />
         )}
-        {!failed && view === "method" && <Method params={summary.params} />}
+        {!failed && view === "method" && <Method params={summary.params} settings={portfolio.settings} />}
       </main>
     </>
   );

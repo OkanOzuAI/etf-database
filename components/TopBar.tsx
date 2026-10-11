@@ -2,9 +2,10 @@ import type { View } from "@/lib/types";
 import AdviceNote from "./AdviceNote";
 import Segmented from "./Segmented";
 
-// ---- The four views and their tab names ----
+// ---- The five views and their tab names ----
 const VIEWS: { value: View; label: string }[] = [
-  { value: "overview", label: "Overview" },
+  { value: "portfolio", label: "Portfolio" },
+  { value: "overview", label: "Funds" },
   { value: "compare", label: "Compare" },
   { value: "details", label: "Details" },
   { value: "method", label: "Method" },
@@ -21,10 +22,10 @@ export default function TopBar({ view, onChange }: Props) {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-page/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1150px] flex-wrap items-center gap-x-2 gap-y-2 px-4 py-2.5 sm:gap-x-6 sm:px-6">
-        {/* ---- Site name: also a button that goes back to the Overview ---- */}
+        {/* ---- Site name: also a button that goes back to the first view ---- */}
         <button
           type="button"
-          onClick={() => onChange("overview")}
+          onClick={() => onChange("portfolio")}
           className="flex items-center gap-2 text-sm font-semibold whitespace-nowrap sm:text-base"
         >
           <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true">
@@ -38,7 +39,7 @@ export default function TopBar({ view, onChange }: Props) {
               strokeLinejoin="round"
             />
           </svg>
-          ETF &amp; Stock Database
+          ETF &amp; Fund Portfolio
         </button>
 
         {/* ---- Disclaimer: visible on every view ---- */}

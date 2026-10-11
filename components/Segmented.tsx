@@ -25,7 +25,8 @@ export default function Segmented<T extends string>({ label, options, value, onC
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(option.value)}
-            className={`flex-1 rounded-lg px-3 py-1.5 text-sm whitespace-nowrap transition-colors ${
+            // A little less side padding on a phone, so that the five view tabs fit in one row.
+            className={`flex-1 rounded-lg px-2 py-1.5 text-sm whitespace-nowrap transition-colors sm:px-3 ${
               selected ? "bg-thumb font-semibold text-accent shadow-sm" : "text-ink-2 hover:text-ink"
             }`}
           >

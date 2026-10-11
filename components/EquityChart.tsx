@@ -1,9 +1,9 @@
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
-import { formatDate, formatDollar } from "@/lib/format";
+import { formatDate, formatMoney } from "@/lib/format";
 import { rebasePortfolios } from "@/lib/range";
 import type { DailyRow, Params } from "@/lib/types";
 import Card from "./Card";
-import { dateTicks, DollarTooltip, Legend, roundTicks } from "./ChartParts";
+import { dateTicks, Legend, MoneyTooltip, roundTicks } from "./ChartParts";
 import type { LineSeries } from "./ChartParts";
 
 // ---- Series ----
@@ -15,11 +15,12 @@ const SERIES: LineSeries[] = [
 
 type Props = {
   rows: DailyRow[]; // daily rows of the selected range
+  currency: string; // "USD" or "TRY"
   params: Params;
 };
 
-// Portfolio value chart: the strategy and Buy & Hold in one chart, on one dollar axis.
-export default function EquityChart({ rows, params }: Props) {
+// Portfolio value chart: the strategy and Buy & Hold in one chart, on one money axis.
+export default function EquityChart({ rows, currency, params }: Props) {
   // Both portfolios start again with the starting capital on the first day of the range.
   const data = rebasePortfolios(rows, params.initial_capital);
 
@@ -30,7 +31,7 @@ export default function EquityChart({ rows, params }: Props) {
   return (
     <Card
       title="Portfolio value: Strategy and Buy & Hold"
-      description={`Both portfolios are rebased to ${formatDollar(params.initial_capital, 0)} on ${formatDate(rows[0].date)}, the first day of the selected range. For the full period this is the original backtest.`}
+      description={`Both portfolios are rebased to ${formatMoney(params.initial_capital, currency, 0)} on ${formatDate(rows[0].date)}, the first day of the selected range. For the full period this is the original backtest.`}
     >
       <Legend items={SERIES} />
 
@@ -55,7 +56,7 @@ export default function EquityChart({ rows, params }: Props) {
           width="auto"
           ticks={valueTicks}
           domain={[valueTicks[0], valueTicks[valueTicks.length - 1]]}
-          tickFormatter={(value: number) => formatDollar(value, 0)}
+          tickFormatter={(value: number) => formatMoney(value, currency, 0)}
           tick={{ fill: "var(--ink-2)" }}
           tickLine={false}
           axisLine={false}
@@ -66,7 +67,7 @@ export default function EquityChart({ rows, params }: Props) {
           isAnimationActive={false}
           cursor={{ stroke: "var(--axis)" }}
           content={({ active, payload }) =>
-            active && payload.length > 0 ? <DollarTooltip row={payload[0].payload} series={SERIES} /> : null
+            active && payload.length > 0 ? <MoneyTooltip row={payload[0].payload} series={SERIES} currency={currency} /> : null
           }
         />
 

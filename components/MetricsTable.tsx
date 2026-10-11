@@ -1,4 +1,4 @@
-import { formatDate, formatDollar, formatNumber, formatPercent } from "@/lib/format";
+import { formatDate, formatMoney, formatNumber, formatPercent } from "@/lib/format";
 import type { Metrics, Params, SymbolSummary } from "@/lib/types";
 import Card from "./Card";
 import { HeadCell, RowHead, Table } from "./TableParts";
@@ -10,16 +10,16 @@ type Better = "high" | "low" | "zero" | "none";
 type Row = {
   key: keyof Metrics;
   label: string;
-  format: (value: number) => string;
+  format: (value: number, currency: string) => string; // money rows are written in the currency of the fund
   better: Better;
 };
 
 // ---- The rows of the table ----
 // Returns and profit are changes, so they are written with a plus or minus sign.
 const ROWS: Row[] = [
-  { key: "final_value", label: "Final value", format: (v) => formatDollar(v), better: "high" },
+  { key: "final_value", label: "Final value", format: (v, currency) => formatMoney(v, currency), better: "high" },
   { key: "total_return_pct", label: "Total return", format: (v) => formatPercent(v, 2, true), better: "high" },
-  { key: "profit", label: "Profit", format: (v) => formatDollar(v, 2, true), better: "high" },
+  { key: "profit", label: "Profit", format: (v, currency) => formatMoney(v, currency, 2, true), better: "high" },
   { key: "cagr_pct", label: "CAGR (yearly growth rate)", format: (v) => formatPercent(v, 2, true), better: "high" },
   { key: "volatility_pct", label: "Volatility (yearly)", format: (v) => formatPercent(v), better: "low" },
   { key: "sharpe", label: "Sharpe ratio", format: (v) => formatNumber(v), better: "high" },
@@ -57,7 +57,7 @@ export default function MetricsTable({ info, params }: Props) {
   return (
     <Card
       title="Metrics, full period"
-      description={`${info.symbol} from ${formatDate(info.start)} to ${formatDate(info.end)}, starting with ${formatDollar(params.initial_capital, 0)}. The date range does not change this table.`}
+      description={`${info.symbol} from ${formatDate(info.start)} to ${formatDate(info.end)}, starting with ${formatMoney(params.initial_capital, info.currency, 0)}. The date range does not change this table.`}
     >
       <Table>
         <thead>
@@ -74,8 +74,8 @@ export default function MetricsTable({ info, params }: Props) {
             return (
               <tr key={row.key} className="border-b border-line">
                 <RowHead>{row.label}</RowHead>
-                <MetricCell text={row.format(strategyValue)} wins={isBetter(strategyValue, buyHoldValue, row.better)} />
-                <MetricCell text={row.format(buyHoldValue)} wins={isBetter(buyHoldValue, strategyValue, row.better)} />
+                <MetricCell text={row.format(strategyValue, info.currency)} wins={isBetter(strategyValue, buyHoldValue, row.better)} />
+                <MetricCell text={row.format(buyHoldValue, info.currency)} wins={isBetter(buyHoldValue, strategyValue, row.better)} />
               </tr>
             );
           })}

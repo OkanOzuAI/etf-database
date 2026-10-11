@@ -1,6 +1,6 @@
 // Small parts shared by the charts: axis helpers, the legend row and the tooltip box.
 
-import { formatDate, formatDay, formatDollar, formatMonth } from "@/lib/format";
+import { formatDate, formatDay, formatMonth, formatPrice } from "@/lib/format";
 
 // ---- X axis ----
 
@@ -31,12 +31,14 @@ export function dateTicks(dates: string[]): { ticks: string[]; format: (date: st
 // Makes round tick values for the y axis (for example 0, 10,000, 20,000 ...).
 // The data range is cut into about 5 parts; the step is rounded up to 1, 2, 5 or 10 times a
 // power of ten. The first tick is at or below the smallest value, the last at or above the largest.
-export function roundTicks(values: number[]): number[] {
+// The step is at least minStep: 1 where the labels are whole numbers, much less for a price
+// axis, because a share of a Turkish fund can cost less than one lira.
+export function roundTicks(values: number[], minStep = 1): number[] {
   const min = Math.min(...values);
   const max = Math.max(...values);
 
-  // 1) Rough step (at least 1, because the labels are whole numbers) and its size: 1, 10, 100 ...
-  const rough = Math.max((max - min) / 5, 1);
+  // 1) Rough step and its size: ... 0.01, 0.1, 1, 10, 100 ...
+  const rough = Math.max((max - min) / 5, minStep);
   const power = 10 ** Math.floor(Math.log10(rough));
 
   // 2) Round the rough step up to the nearest round step.
@@ -45,12 +47,22 @@ export function roundTicks(values: number[]): number[] {
   if (rough <= 2 * power) step = 2 * power;
   if (rough <= power) step = power;
 
-  // 3) Start at the first multiple of the step below the smallest value and go on past the largest.
+  // 3) Start at the last multiple of the step at or below the smallest value and stop at the
+  //    first one at or above the largest.
+  const first = Math.floor(min / step);
+  const last = Math.ceil(max / step);
   const ticks = [];
-  for (let tick = Math.floor(min / step) * step; tick < max + step; tick += step) {
-    ticks.push(tick);
+  for (let multiple = first; multiple <= last; multiple += 1) {
+    ticks.push(multiple * step);
   }
   return ticks;
+}
+
+// How many decimals the tick labels need, so that two neighbouring ticks get different labels:
+// 0 for a step of 1 or more, 2 for a step of 0.05, 3 for a step of 0.002 ...
+export function tickDigits(ticks: number[]): number {
+  const step = ticks.length > 1 ? ticks[1] - ticks[0] : 1;
+  return step >= 1 ? 0 : Math.ceil(-Math.log10(step));
 }
 
 // Tick values for a log axis. A log axis cannot show zero, so:
@@ -144,24 +156,30 @@ export function TooltipBox({ title, rows }: { title: string; rows: TooltipRow[] 
   );
 }
 
-// One series of a dollar line chart: which field is drawn, with which name and colour.
+// One series of a money line chart: which field is drawn, with which name and colour.
 export type LineSeries = {
   key: "price" | "sma_short" | "sma_long" | "strategy" | "buy_hold";
   label: string;
   color: string;
 };
 
-// A row of a dollar line chart: a date and the values of its series.
-type DollarRow = { date: string } & Partial<Record<LineSeries["key"], number | null>>;
+// A row of a money line chart: a date and the values of its series.
+type MoneyRow = { date: string } & Partial<Record<LineSeries["key"], number | null>>;
 
-// Tooltip of the dollar line charts: lists every series of the chosen day.
-export function DollarTooltip({ row, series }: { row: DollarRow; series: LineSeries[] }) {
+type MoneyTooltipProps = {
+  row: MoneyRow;
+  series: LineSeries[];
+  currency: string; // "USD" or "TRY"
+};
+
+// Tooltip of the money line charts: lists every series of the chosen day.
+export function MoneyTooltip({ row, series, currency }: MoneyTooltipProps) {
   const rows: TooltipRow[] = [];
   for (const item of series) {
     const value = row[item.key];
     // A moving average that does not exist yet (null) gets no row.
     if (value != null) {
-      rows.push({ label: item.label, color: item.color, value: formatDollar(value) });
+      rows.push({ label: item.label, color: item.color, value: formatPrice(value, currency) });
     }
   }
   return <TooltipBox title={formatDate(row.date)} rows={rows} />;

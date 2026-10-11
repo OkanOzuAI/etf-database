@@ -16,7 +16,8 @@ type Props = {
 
 // Table of the Compare view: the return in the selected range next to the trailing returns.
 export default function RangeTable({ picked, mode, modeName, lastDataDay }: Props) {
-  // The picked symbols share the same trading days, so the first one gives the days of the range.
+  // The first picked symbol gives the days shown in the header. A symbol of the other market can
+  // start or end on another day, because the two markets have different holidays.
   const rows = picked[0].rows;
   const rangeText = `${formatDate(rows[0].date)} – ${formatDate(rows[rows.length - 1].date)}`;
 

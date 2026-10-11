@@ -1,4 +1,4 @@
-import { formatDate, formatDollar, formatNumber, formatPercent } from "@/lib/format";
+import { formatDate, formatNumber, formatPercent } from "@/lib/format";
 import type { DateRange, Mode, Params, PickedSymbol } from "@/lib/types";
 import Card from "./Card";
 import { HeadCell, PercentCell, PickedName, Table, ValueCell } from "./TableParts";
@@ -16,12 +16,13 @@ export default function RiskTable({ picked, mode, modeName, dataRange, params }:
   return (
     <Card
       title="Risk and return, full period"
-      description={`${modeName} over all the data of each symbol (until ${formatDate(dataRange.to)}), starting with ${formatDollar(params.initial_capital, 0)}. The date range does not change this table.`}
+      description={`${modeName} over all the data of each symbol (until ${formatDate(dataRange.to)}), starting with ${formatNumber(params.initial_capital, 0)} in the symbol's own currency. The date range does not change this table.`}
     >
       <Table>
         <thead>
           <tr className="border-b border-line">
             <HeadCell left>Symbol</HeadCell>
+            <HeadCell>Currency</HeadCell>
             <HeadCell>Data since</HeadCell>
             <HeadCell>Total return</HeadCell>
             <HeadCell>CAGR</HeadCell>
@@ -37,6 +38,7 @@ export default function RiskTable({ picked, mode, modeName, dataRange, params }:
             return (
               <tr key={item.info.symbol} className="border-b border-line">
                 <PickedName item={item} withName />
+                <ValueCell>{item.info.currency}</ValueCell>
                 <ValueCell>{formatDate(item.info.start)}</ValueCell>
                 <PercentCell value={metrics.total_return_pct} />
                 <PercentCell value={metrics.cagr_pct} />

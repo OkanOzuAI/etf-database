@@ -1,4 +1,4 @@
-import { formatDate, formatDollar, formatNumber, formatPercent } from "@/lib/format";
+import { formatDate, formatMoney, formatNumber, formatPercent } from "@/lib/format";
 import { rangeReturn, rowsInRange } from "@/lib/range";
 import type { DateRange, Params, Summary, SymbolData, SymbolSummary } from "@/lib/types";
 import EquityChart from "./EquityChart";
@@ -81,7 +81,9 @@ export default function Details({ summary, selected, data, onSelect, range, data
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {info.symbol} <span className="font-normal text-ink-2">{info.name}</span>
             </h1>
-            <p className="mt-1 text-sm text-ink-2">{info.group}</p>
+            <p className="mt-1 text-sm text-ink-2">
+              {`${info.group} · ${info.type} · ${info.market} · prices in ${info.currency}`}
+            </p>
           </header>
 
           <SignalCard info={info} lastDay={data.daily[data.daily.length - 1]} params={params} />
@@ -135,13 +137,13 @@ function RangeSections({ info, data, range, params }: RangeProps) {
             label="SMA strategy"
             value={formatPercent(strategyReturn, 2, true)}
             tone={strategyReturn}
-            note={`${formatDollar(capital, 0)} → ${formatDollar(capital * (1 + strategyReturn / 100))}`}
+            note={`${formatMoney(capital, info.currency, 0)} → ${formatMoney(capital * (1 + strategyReturn / 100), info.currency)}`}
           />
           <StatTile
             label="Buy & Hold"
             value={formatPercent(buyHoldReturn, 2, true)}
             tone={buyHoldReturn}
-            note={`${formatDollar(capital, 0)} → ${formatDollar(capital * (1 + buyHoldReturn / 100))}`}
+            note={`${formatMoney(capital, info.currency, 0)} → ${formatMoney(capital * (1 + buyHoldReturn / 100), info.currency)}`}
           />
           <div className="col-span-2 lg:col-span-1">
             <StatTile
@@ -153,8 +155,8 @@ function RangeSections({ info, data, range, params }: RangeProps) {
         </div>
       </section>
 
-      <PriceChart symbol={info.symbol} rows={rows} signals={data.signals} params={params} />
-      <EquityChart rows={rows} params={params} />
+      <PriceChart symbol={info.symbol} currency={info.currency} rows={rows} signals={data.signals} params={params} />
+      <EquityChart rows={rows} currency={info.currency} params={params} />
       <ReturnsChart symbol={info.symbol} returns={data.returns} rows={rows} />
     </>
   );

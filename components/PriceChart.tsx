@@ -1,19 +1,20 @@
 import { CartesianGrid, Line, LineChart, ReferenceDot, Tooltip, XAxis, YAxis } from "recharts";
-import { formatDate, formatDollar } from "@/lib/format";
+import { formatDate, formatMoney, formatPrice } from "@/lib/format";
 import type { DailyRow, Params, Signal } from "@/lib/types";
 import Card from "./Card";
-import { dateTicks, DollarTooltip, Legend, roundTicks, trianglePath } from "./ChartParts";
+import { dateTicks, Legend, MoneyTooltip, roundTicks, tickDigits, trianglePath } from "./ChartParts";
 import type { LineSeries } from "./ChartParts";
 
 type Props = {
   symbol: string;
+  currency: string; // "USD" or "TRY"
   rows: DailyRow[]; // daily rows of the selected range
   signals: Signal[]; // every day the signal changed (full period)
   params: Params;
 };
 
 // Price chart: adjusted close, the two moving averages and the buy / sell markers.
-export default function PriceChart({ symbol, rows, signals, params }: Props) {
+export default function PriceChart({ symbol, currency, rows, signals, params }: Props) {
   // ---- Series (the lines, the legend and the tooltip use the same list) ----
   const series: LineSeries[] = [
     { key: "price", label: "Price", color: "var(--series-1)" },
@@ -23,8 +24,10 @@ export default function PriceChart({ symbol, rows, signals, params }: Props) {
 
   // ---- Axis ticks ----
   // The y axis covers the price and both averages (an average does not exist on the first days).
+  // The smallest step is tiny, so that a fund with a price below one lira also gets useful ticks.
   const values = rows.flatMap((row) => [row.price, row.sma_short ?? row.price, row.sma_long ?? row.price]);
-  const priceTicks = roundTicks(values);
+  const priceTicks = roundTicks(values, 0.000001);
+  const digits = tickDigits(priceTicks);
   const xAxis = dateTicks(rows.map((row) => row.date));
 
   // ---- Markers: only the signals inside the selected range ----
@@ -66,7 +69,7 @@ export default function PriceChart({ symbol, rows, signals, params }: Props) {
           width="auto"
           ticks={priceTicks}
           domain={[priceTicks[0], priceTicks[priceTicks.length - 1]]}
-          tickFormatter={(value: number) => formatDollar(value, 0)}
+          tickFormatter={(value: number) => formatMoney(value, currency, digits)}
           tick={{ fill: "var(--ink-2)" }}
           tickLine={false}
           axisLine={false}
@@ -77,7 +80,7 @@ export default function PriceChart({ symbol, rows, signals, params }: Props) {
           isAnimationActive={false}
           cursor={{ stroke: "var(--axis)" }}
           content={({ active, payload }) =>
-            active && payload.length > 0 ? <DollarTooltip row={payload[0].payload} series={series} /> : null
+            active && payload.length > 0 ? <MoneyTooltip row={payload[0].payload} series={series} currency={currency} /> : null
           }
         />
 
@@ -113,7 +116,7 @@ export default function PriceChart({ symbol, rows, signals, params }: Props) {
                   strokeWidth={2}
                   strokeLinejoin="round"
                 >
-                  <title>{`${isBuy ? "Buy" : "Sell"} · ${formatDate(signal.date)} · ${formatDollar(signal.price)}`}</title>
+                  <title>{`${isBuy ? "Buy" : "Sell"} · ${formatDate(signal.date)} · ${formatPrice(signal.price, currency)}`}</title>
                 </path>
               )}
             />

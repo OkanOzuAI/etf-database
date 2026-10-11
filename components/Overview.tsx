@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatDate, formatDateTime, formatDollar, formatMonth } from "@/lib/format";
+import { formatDate, formatDateTime, formatMonth, formatNumber, formatPrice } from "@/lib/format";
 import type { DateRange, SignalLabel, Summary, SymbolSummary, TrailingKey, View } from "@/lib/types";
 import Segmented from "./Segmented";
 import SignalBadge from "./SignalBadge";
@@ -38,7 +38,7 @@ type Props = {
   onOpenView: (view: View) => void;
 };
 
-// Overview: what the site is for, a few summary numbers and one table of all symbols.
+// Funds view: the trend signal tested on every fund alone, a few summary numbers and one table of all funds.
 export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView }: Props) {
   const { params, symbols } = summary;
   const [filter, setFilter] = useState(ALL_GROUPS); // group filter of the table
@@ -56,10 +56,10 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
       {/* ---- What the site is for, data range and last update ---- */}
       <header>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-          Does a moving average strategy beat Buy &amp; Hold?
+          The funds and their trend signal
         </h1>
         <p className="mt-3 max-w-3xl text-ink-2 sm:text-lg">
-          {`This site tests one simple trading rule on the ${symbols.length} symbols below: hold a symbol while its ${params.sma_short}-day average price (SMA${params.sma_short}) is above its ${params.sma_long}-day average (SMA${params.sma_long}), otherwise stay in cash. The result is compared with Buy & Hold, which buys on the first day and never sells. Every test starts with ${formatDollar(params.initial_capital, 0)}.`}
+          {`The portfolio only gives a weight to a fund that is in an uptrend: its ${params.sma_short}-day average price (SMA${params.sma_short}) is above its ${params.sma_long}-day average (SMA${params.sma_long}). This page tests that signal on each of the ${symbols.length} funds alone: hold the fund while the signal is on, otherwise stay in cash. The result is compared with Buy & Hold, which buys on the first day and never sells. Every test starts with ${formatNumber(params.initial_capital, 0)} in the fund's own currency.`}
         </p>
         <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-2">
           <span>
@@ -73,7 +73,7 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
             onClick={() => onOpenView("compare")}
             className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-page transition-opacity hover:opacity-90"
           >
-            Compare symbols
+            Compare funds
           </button>
           <button
             type="button"
@@ -87,21 +87,21 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
 
       {/* ---- Summary tiles ---- */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Symbols" value={String(symbols.length)} note={`in ${groups.length} groups`} />
+        <StatTile label="Funds" value={String(symbols.length)} note={`in ${groups.length} groups`} />
         <StatTile
-          label="Data period"
+          label="Daily data"
           value={`${params.years} years`}
-          note={`${formatDate(dataRange.from)} – ${formatDate(dataRange.to)}`}
+          note={`US ETFs. Turkish funds: ${params.tefas_months / 12} years, the most TEFAS gives`}
         />
         <StatTile
           label="Buy & Hold won"
           value={`${buyHoldWins.length} of ${symbols.length}`}
-          note="symbols with a higher total return than the strategy"
+          note="funds with a higher total return than the strategy"
         />
         <StatTile
           label="SMA strategy won"
           value={`${strategyWins.length} of ${symbols.length}`}
-          note={strategyWins.length > 0 ? strategyWins.map((item) => item.symbol).join(", ") : "no symbol"}
+          note={strategyWins.length > 0 ? strategyWins.map((item) => item.symbol).join(", ") : "no fund"}
         />
       </div>
 
@@ -109,9 +109,9 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
       <section className="overflow-hidden rounded-2xl border border-line bg-surface">
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 p-4 sm:p-6">
           <div className="max-w-2xl">
-            <h2 className="font-semibold">All symbols</h2>
+            <h2 className="font-semibold">All funds</h2>
             <p className="mt-1 text-sm text-ink-2">
-              {`Select a row to open the details of a symbol. Price return: change of the price up to the last data day (${formatDate(dataRange.to)}). Total return: the two portfolios over the full period. A symbol marked "since ..." was listed later, so its numbers cover a shorter period.`}
+              {`Select a row to open the details of a fund. Price return: change of the price up to the last data day (${formatDate(dataRange.to)}). Total return: the two portfolios over the full period. A fund marked "since ..." has a shorter history, so its numbers cover a shorter period. All numbers are in the fund's own currency: a return in lira and a return in dollars cannot be compared directly.`}
             </p>
           </div>
           <Segmented
@@ -129,7 +129,7 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
               {/* First header row: the two column groups */}
               <tr>
                 <th scope="col" rowSpan={2} className={`${HEAD} sticky left-0 bg-surface pl-4 text-left align-bottom sm:pl-6`}>
-                  Symbol
+                  Fund
                 </th>
                 <th scope="col" rowSpan={2} className={`${HEAD} text-right align-bottom`}>
                   Last price
@@ -190,13 +190,13 @@ export default function Overview({ summary, dataRange, onOpenSymbol, onOpenView 
                         <button type="button" className="w-28 rounded-sm text-left sm:w-32">
                           <span className="block font-semibold text-accent group-hover:underline">{item.symbol}</span>
                           <span className="block text-xs text-ink-2">{item.name}</span>
-                          {/* Listed after the data starts: show since when it has data. */}
+                          {/* A shorter history than the oldest fund: show since when it has data. */}
                           {item.start > dataRange.from && (
                             <span className="block text-xs text-ink-2">since {formatMonth(item.start.slice(0, 7))}</span>
                           )}
                         </button>
                       </th>
-                      <ValueCell>{formatDollar(item.last_price)}</ValueCell>
+                      <ValueCell>{formatPrice(item.last_price, item.currency)}</ValueCell>
                       {WINDOWS.map((key) => (
                         <PercentCell key={key} value={item.trailing[key]} />
                       ))}

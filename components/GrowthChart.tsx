@@ -104,6 +104,7 @@ export default function GrowthChart({ picked, mode, modeName }: Props) {
             stroke={item.color}
             strokeWidth={2}
             dot={false}
+            connectNulls // the two markets have different holidays: the line goes on over a day without a value
             activeDot={{ r: 4, stroke: "var(--surface)", strokeWidth: 2 }}
             isAnimationActive={false}
           />
