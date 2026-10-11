@@ -22,7 +22,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run the pipeline (download, clean, backtest)
+      - name: Run the pipeline (download, clean, backtest, portfolio)
+        env:
+          # From GitHub's servers a TEFAS request that comes soon after another one gets no
+          # answer. So this job waits about two minutes between TEFAS requests (the 10 Turkish
+          # funds take about 20 minutes).
+          TEFAS_SLEEP_SECONDS: "130"
+          PYTHONUNBUFFERED: "1"  # show every line in the log at once
         run: python run_all.py
 
       - name: Commit the updated JSON files

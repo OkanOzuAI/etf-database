@@ -1,4 +1,5 @@
 """All project settings in one place. The scripts and the notebook read them from here."""
+import os
 from pathlib import Path
 
 # ---- Investment universe: 10 US-listed ETFs and 10 Turkish funds ----
@@ -65,7 +66,10 @@ MIN_MARKET_WEIGHT = 0.20   # each market (Türkiye, United States) gets at least
 REQUEST_TIMEOUT = 30       # longest wait for one request (seconds)
 MAX_TRIES = 3              # how many times one request is tried
 SLEEP_SECONDS = 2          # pause between Yahoo requests (seconds)
-TEFAS_SLEEP_SECONDS = 11   # pause between TEFAS requests (TEFAS allows about 6 requests per minute)
+# Pause between TEFAS requests (seconds). 11 is enough from a home connection (TEFAS allows about
+# 6 requests per minute). From GitHub's servers a TEFAS request that comes soon after another one
+# gets no answer, so the daily update sets a longer pause with the environment variable below.
+TEFAS_SLEEP_SECONDS = int(os.environ.get("TEFAS_SLEEP_SECONDS", 11))
 
 # Folders
 ROOT = Path(__file__).resolve().parent.parent
