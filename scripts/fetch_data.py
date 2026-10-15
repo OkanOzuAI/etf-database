@@ -33,10 +33,11 @@ def date_range():
     return start, end
 
 
-def request_with_retry(url, params=None, json=None):
-    """Sends a request; on an error it waits a little and tries again.
+def request_with_retry(url, params=None, json=None, wait=config.SLEEP_SECONDS):
+    """Sends a request; on an error it waits and tries again.
 
     Without a JSON body it is a GET request (Yahoo, Stooq), with one it is a POST request (TEFAS).
+    `wait` is the pause in seconds before the second try; it grows with each try.
     """
     for attempt in range(1, config.MAX_TRIES + 1):
         try:
@@ -50,7 +51,7 @@ def request_with_retry(url, params=None, json=None):
             print(f"    attempt {attempt}/{config.MAX_TRIES} failed: {error}")
             if attempt == config.MAX_TRIES:
                 raise
-            time.sleep(config.SLEEP_SECONDS * attempt)  # wait a bit longer each time
+            time.sleep(wait * attempt)  # wait a bit longer each time
 
 
 def fetch_yahoo(symbol, start, end):
@@ -95,7 +96,9 @@ def fetch_tefas(symbol, start, end):
     Turkish history is shorter than YEARS.
     """
     body = {"fonKodu": symbol, "dil": "TR", "periyod": config.TEFAS_MONTHS}
-    response = request_with_retry(TEFAS_URL, json=body)
+    # When TEFAS drops a request, an immediate new try is dropped too. So we wait as long
+    # as between two funds before trying again.
+    response = request_with_retry(TEFAS_URL, json=body, wait=config.TEFAS_SLEEP_SECONDS)
     rows = response.json()["resultList"]  # one row per day: "tarih" (date) and "fiyat" (price)
     if not rows:
         raise ValueError("TEFAS returned no rows for this fund code")

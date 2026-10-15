@@ -187,7 +187,7 @@ The page opens at `http://localhost:3000`. For the production version run `npm r
 
 `.github/workflows/update-data.yml` runs `python run_all.py` every day at 01:30 UTC and commits the changed JSON files. The repository is connected to Vercel, so every commit publishes the site again. If anything cannot be downloaded, `run_all.py` ends with an error code and nothing is committed that day, so the site keeps the data of the day before.
 
-From GitHub's servers a TEFAS request that comes soon after another one gets no answer. So the workflow waits about two minutes between TEFAS requests (the setting `TEFAS_SLEEP_SECONDS`), and one run takes about 25 minutes. On a home connection the normal pause of 11 seconds is enough.
+From GitHub's servers a TEFAS request that comes soon after another one gets no answer. So the workflow waits about two minutes between TEFAS requests (the setting `TEFAS_SLEEP_SECONDS`), and one run takes about 25 minutes. If TEFAS still drops a request, the script waits just as long before it tries again. On a home connection the normal pause of 11 seconds is enough.
 
 ## Results so far
 
