@@ -32,6 +32,7 @@ The strategy and both benchmarks go through the same function (`simulate` in `sc
 | Costs | 0.1% commission on every trade (`COMMISSION`), plus 0.2% for changing lira into dollars or back on every trade of a US ETF (`FX_COST`). The costs are paid from the portfolio |
 | Cash | held in lira, earns no interest |
 | Not allowed | borrowing (the simulation stops with an error if cash becomes negative) and short selling |
+| Yearly values | the portfolio is valued on every day on which one of the two markets is open, so the yearly volatility and the Sharpe ratio use the number of days with a value per year (about 260), not 252 |
 
 **Simplifications** (each one is small for a weekly portfolio, but they are not exact):
 

@@ -108,7 +108,7 @@ export default function Method({ params, settings }: Props) {
             <li>{"Bid-ask spread, slippage and taxes are ignored; cash earns no interest."}</li>
             <li>{`Until SMA${long} exists (the first ${long} trading days) the strategy stays in cash, while Buy & Hold is invested from day one.`}</li>
             <li>{"Buy and sell markers on the price chart show the day the signal appeared."}</li>
-            <li>{"The Sharpe ratio uses a risk-free rate of 0. A year is counted as 252 trading days."}</li>
+            <li>{"The Sharpe ratio uses a risk-free rate of 0. In the test of one fund a year is counted as 252 trading days. The Validation view counts the days with a value per year instead (about 260), because the portfolio is valued on every day on which one of the two markets is open."}</li>
             <li>{`Turkish funds have ${params.tefas_months / 12} years of data. Their numbers cover only these years, and a comparison starts on the first day that every picked symbol has data.`}</li>
             <li>{"In the Compare view every line starts at 100 on the first day of the selected range, so symbols with very different prices can be compared."}</li>
             <li>{"Trailing returns (1M, 1Y, ...) and the calendar-year returns of a symbol are price returns (adjusted close), without commission. The calendar-year returns of the strategy come from its portfolio value, so they include commission."}</li>

@@ -20,7 +20,7 @@ This file describes the price-only algorithm of Phase 2: the rules of the portfo
 | Not allowed | negative weights (short selling) and a total above 100% (borrowing) | `check_rules` |
 | Reporting currency | Turkish lira | `REPORT_CURRENCY` |
 
-**Observation window.** The longest window is 200 trading days. An instrument has no signal before it has 200 prices, so the first decision is on the first Friday on which all 20 instruments have 200 prices (July 29, 2022 with the current data).
+**Observation window.** The longest window is 200 trading days. An instrument has no signal before it has 200 prices, so the first decision is on the first Friday on which all 20 instruments have 200 prices (August 26, 2022 with the prices until November 5, 2026). This day moves forward over time, because TEFAS gives only the last 60 months.
 
 **Why these limits?**
 

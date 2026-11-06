@@ -143,7 +143,7 @@ The trend signal is also tested on every instrument alone (`scripts/backtest.py`
 - All calculations use the adjusted close. For US ETFs it includes dividends and splits; for Turkish funds it is the price published by TEFAS.
 - The portfolio weights are targets. Trading costs, settlement days and the time between a decision and its execution are not part of the weights; they are simulated in Phase 3.
 - In the test of one instrument a trade is made at the closing price of the day the signal appears, and returns start on the next trading day. This is a simplification: an order for a mutual fund is filled at the next fund price, and an ETF order after the close is filled on the next trading day (see the data dictionary, section 7). So this test is a first look at the signal and not a simulation of real trading. Bid-ask spread, slippage and taxes are ignored; cash earns no interest.
-- A year is counted as 252 trading days (used for the yearly volatility and the Sharpe ratio).
+- In the test of one instrument a year is counted as 252 trading days (used for the yearly volatility and the Sharpe ratio). The Phase 3 simulation values the portfolio on every day on which one of the two markets is open, so it counts the days with a value per year instead (about 260).
 
 ## Phase 3: historical validation against benchmarks
 

@@ -121,6 +121,7 @@ Prices are in the currency of the instrument (USD or TRY). `data/clean/USDTRY.cs
 | `summary.json` | one entry per instrument: period, last price, trailing returns, results of the single-instrument backtest, signal label |
 | `<SYMBOL>.json` | daily price, moving averages, portfolio values, trades and period returns of one instrument |
 | `portfolio.json` | the last weekly portfolio decision (weights, market totals, cash) and the history of all weekly decisions |
+| `validation.json` | Phase 3: the strategy and the two benchmarks over the whole period (results and weekly values), the rolling validation, the parameter sensitivity, the money market comparison and the checks |
 
 ## 5. Which price is used, and adjustments
 
