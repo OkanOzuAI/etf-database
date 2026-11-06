@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-06T17:55:58Z",
+  "updated_at": "2026-11-06T18:52:15Z",
   "params": {
     "years": 10,
     "tefas_months": 60,
@@ -89,8 +89,8 @@
         "trades": 9
       },
       "buy_hold": {
-        "final_value": 59450.75,
-        "profit": 49450.75,
+        "final_value": 59450.77,
+        "profit": 49450.77,
         "total_return_pct": 494.51,
         "cagr_pct": 19.53,
         "volatility_pct": 22.73,
@@ -124,8 +124,8 @@
         "ALL": 241.59
       },
       "strategy": {
-        "final_value": 15261.01,
-        "profit": 5261.01,
+        "final_value": 15261.02,
+        "profit": 5261.02,
         "total_return_pct": 52.61,
         "cagr_pct": 4.32,
         "volatility_pct": 15.0,
@@ -169,8 +169,8 @@
         "ALL": 159.01
       },
       "strategy": {
-        "final_value": 10098.12,
-        "profit": 98.12,
+        "final_value": 10098.13,
+        "profit": 98.13,
         "total_return_pct": 0.98,
         "cagr_pct": 0.1,
         "volatility_pct": 17.21,
@@ -179,8 +179,8 @@
         "trades": 15
       },
       "buy_hold": {
-        "final_value": 25874.9,
-        "profit": 15874.9,
+        "final_value": 25874.89,
+        "profit": 15874.89,
         "total_return_pct": 158.75,
         "cagr_pct": 9.98,
         "volatility_pct": 23.05,
@@ -269,8 +269,8 @@
         "trades": 13
       },
       "buy_hold": {
-        "final_value": 19393.52,
-        "profit": 9393.52,
+        "final_value": 19393.51,
+        "profit": 9393.51,
         "total_return_pct": 93.94,
         "cagr_pct": 6.85,
         "volatility_pct": 20.92,
@@ -304,8 +304,8 @@
         "ALL": 12.76
       },
       "strategy": {
-        "final_value": 4312.27,
-        "profit": -5687.73,
+        "final_value": 4312.28,
+        "profit": -5687.72,
         "total_return_pct": -56.88,
         "cagr_pct": -8.07,
         "volatility_pct": 23.37,
