@@ -9,6 +9,8 @@ This file describes Phase 3: how the price-only algorithm of Phase 2 was tested 
 | Walk-through with code, tables and charts | [`notebook/validation.ipynb`](../notebook/validation.ipynb) |
 | All results as data (updated every day) | `public/data/validation.json` |
 
+The sources of the methods (moving averages, 1 / volatility weights, equal-weight benchmarks, rolling validation, Sharpe ratio) are listed in the README, section References.
+
 **The numbers below use the prices until November 5, 2026** (the US close of that day; for the Turkish funds the market until November 4). The daily update computes everything again with new prices, so `validation.json` and the notebook can show slightly different numbers later.
 
 **These results are development and validation evidence, not an untouched final test.** We have seen them, and we may use them to change the algorithm in the next phases. Only the real-time competition (Phase 5) tests the algorithm on market outcomes that nobody has seen.

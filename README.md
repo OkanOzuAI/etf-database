@@ -259,6 +259,21 @@ The results of Phases 1 and 2 use prices until October 9, 2026, the results of P
 - The volatility floor decides most of the result, because it sets how much goes to the calm lira funds. The trend and volatility windows change the total return only between 338% and 384%.
 - Details and ideas for improvement: [`docs/validation.md`](docs/validation.md).
 
+## References
+
+The methods are well known; the code that implements them is our own. These are the sources of the ideas:
+
+| Method | Where it is used | Source |
+|---|---|---|
+| Trend rule with two moving averages | trend signal (`backtest.add_signals`, `portfolio.compute_signals`) | Brock, W., Lakonishok, J. and LeBaron, B. (1992). Simple Technical Trading Rules and the Stochastic Properties of Stock Returns. *The Journal of Finance*, 47(5), 1731–1764. Faber, M. T. (2007). A Quantitative Approach to Tactical Asset Allocation. *The Journal of Wealth Management*, 9(4), 69–79. |
+| Weights in proportion to 1 / volatility | allocation (`portfolio.allocate`) | Maillard, S., Roncalli, T. and Teïletche, J. (2010). The Properties of Equally Weighted Risk Contribution Portfolios. *The Journal of Portfolio Management*, 36(4), 60–70 (1 / volatility is the special case without correlations). |
+| Equal weights (1/N) as a benchmark | benchmarks (`validation.equal_weights`) | DeMiguel, V., Garlappi, L. and Uppal, R. (2009). Optimal Versus Naive Diversification: How Inefficient Is the 1/N Portfolio Strategy? *The Review of Financial Studies*, 22(5), 1915–1953. |
+| Rolling (walk-forward) validation in time order | `validation.walk_forward` | Pardo, R. (2008). *The Evaluation and Optimization of Trading Strategies* (2nd ed.). Wiley. Hyndman, R. J. and Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.), section 5.10, Time series cross-validation. OTexts. https://otexts.com/fpp3/tscv.html |
+| Why choosing settings on past results can mislead | discussion in `docs/validation.md`, section 6 | Bailey, D. H., Borwein, J. M., López de Prado, M. and Zhu, Q. J. (2014). Pseudo-Mathematics and Financial Charlatanism: The Effects of Backtest Overfitting on Out-of-Sample Performance. *Notices of the American Mathematical Society*, 61(5), 458–471. |
+| Sharpe ratio | `backtest.compute_metrics`, `simulate.metrics` | Sharpe, W. F. (1994). The Sharpe Ratio. *The Journal of Portfolio Management*, 21(1), 49–58. |
+
+The data sources (Yahoo Finance, TEFAS) and the sources for the trading and settlement rules (U.S. Securities and Exchange Commission, Borsa Istanbul, TEFAS and KAP fund documents) are listed in [`docs/data_dictionary.md`](docs/data_dictionary.md).
+
 ## Notes
 
 - Yahoo updates its adjusted close values back in time when new dividends are paid. Because of this the results can change slightly depending on the day the script runs.

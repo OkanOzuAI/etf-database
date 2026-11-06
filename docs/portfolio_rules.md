@@ -150,5 +150,5 @@ These results match the table in section 4: the algorithm is close to linear in 
 - The trend is measured in nominal prices. With high inflation the price of almost every lira fund rises, so lira funds are in an "uptrend" most of the time.
 - Volatility is measured in the instrument's own currency. For an investor who counts in lira, a US ETF also carries the risk of the exchange rate, which this version does not see.
 - A Turkish price is one trading day older than its date (see the data dictionary, section 5). On Friday the signals of the Turkish funds know the market until Thursday.
-- The rules use fixed settings (50, 200, 63 days; 20%; 10%). Phase 3 tests how sensitive the results are to them.
-- This version only produces target weights. Trading costs, settlement days and the gap between a decision and its execution are handled in the historical validation (Phase 3).
+- The rules use fixed settings (50, 200, 63 days; 20%; 10%). Phase 3 tested how sensitive the results are to them ([`validation.md`](validation.md), section 5).
+- This algorithm only produces target weights. Trading costs, settlement days and the gap between a decision and its execution are simulated in the historical validation of Phase 3 ([`validation.md`](validation.md), section 1).

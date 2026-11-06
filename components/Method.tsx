@@ -112,7 +112,13 @@ export default function Method({ params, settings }: Props) {
             <li>{`Turkish funds have ${params.tefas_months / 12} years of data. Their numbers cover only these years, and a comparison starts on the first day that every picked symbol has data.`}</li>
             <li>{"In the Compare view every line starts at 100 on the first day of the selected range, so symbols with very different prices can be compared."}</li>
             <li>{"Trailing returns (1M, 1Y, ...) and the calendar-year returns of a symbol are price returns (adjusted close), without commission. The calendar-year returns of the strategy come from its portfolio value, so they include commission."}</li>
-            <li>{"The portfolio page shows target weights only. Trading costs, settlement days and the time between a decision and its execution are not simulated yet."}</li>
+            <li>
+              {"The portfolio page shows target weights only. Trading costs, settlement days and the time between a decision and its execution are not part of the weights; the historical validation against benchmarks simulates them ("}
+              <a className="text-accent underline" href={`${DOCS_URL}/validation.md`}>
+                validation.md
+              </a>
+              {")."}
+            </li>
           </Section>
         </div>
       </div>
