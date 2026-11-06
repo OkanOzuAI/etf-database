@@ -200,8 +200,8 @@ In Phase 2 the algorithm only produces target weights. The trading rules above a
 ## 8. Currency
 
 - The portfolio is reported in one currency: Turkish lira (`REPORT_CURRENCY` in `scripts/config.py`).
-- A US ETF is valued in lira as: price in dollars × USD/TRY rate of the same calendar day. If there is no rate on that day, the last known rate before it is used.
-- The times are not equal. Yahoo's daily USD/TRY value of day D is taken in the first hours of day D, London time (in our file the close of a row is almost equal to its open). The US closing price of day D is from 16:00 New York time, about 20 hours later. The rate that is closest in time to the US close of day D is therefore the value dated the next day. Example: the lira gained strongly on the evening of December 20, 2021, but the row of December 20 still has 16.61; the new level, 13.48, is in the row of December 21. Phase 3 must take this into account when it values US holdings.
+- In the Phase 2 report (`portfolio.json`) a US ETF is valued in lira as: price in dollars × USD/TRY rate of the same calendar day. If there is no rate on that day, the last known rate before it is used.
+- The times are not equal. Yahoo's daily USD/TRY value of day D is taken in the first hours of day D, London time (in our file the close of a row is almost equal to its open). The US closing price of day D is from 16:00 New York time, about 20 hours later. The rate that is closest in time to the US close of day D is therefore the value dated the next day. Example: the lira gained strongly on the evening of December 20, 2021, but the row of December 20 still has 16.61; the new level, 13.48, is in the row of December 21. The Phase 3 simulation takes this into account: it values US holdings with the value dated after the closing day (`rate_after_us_close` in `scripts/simulate.py`).
 - In Phase 2 the exchange rate is used only for valuing. It is not a signal: the signals of an instrument are computed from its own prices in its own currency.
 
 ## 9. Sources for the market rules

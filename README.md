@@ -4,12 +4,13 @@ A course project for DS588 Data Science Algorithms. It is a Python tool that bui
 
 **Live site:** https://etf-database.vercel.app
 
-This repository covers the first two phases of the project:
+This repository covers the first three phases of the project:
 
 - **Phase 1, data collection and preparation:** a reproducible pipeline for 20 instruments and the USD/TRY exchange rate, a documented dataset and a data dictionary.
 - **Phase 2, algorithm design using price action:** an algorithm that turns prices into portfolio weights, with pseudocode, documented rules and a computational analysis.
+- **Phase 3, historical validation against benchmarks:** a simulation with trading costs, settlement days and exchange rates, a comparison with two equal-weight benchmarks, a rolling validation, parameter sensitivity and a discussion of the weaknesses.
 
-The later phases (historical validation against benchmarks, extra information, weekly competition) are not part of this version.
+The later phases (extra information, weekly competition) are not part of this version.
 
 ## Where to find each part
 
@@ -21,7 +22,10 @@ The later phases (historical validation against benchmarks, extra information, w
 | Working price-only algorithm | [`scripts/portfolio.py`](scripts/portfolio.py); its result is `public/data/portfolio.json` |
 | Pseudocode and portfolio rules | [`docs/portfolio_rules.md`](docs/portfolio_rules.md); notebook section 8 |
 | Computational analysis | [`docs/portfolio_rules.md`](docs/portfolio_rules.md) (complexity), [`scripts/runtime_test.py`](scripts/runtime_test.py) and notebook section 9 (measured runtime) |
-| Everything step by step, with code and results | [`notebook/analysis.ipynb`](notebook/analysis.ipynb) |
+| Reproducible historical comparisons (Phase 3) | [`scripts/simulate.py`](scripts/simulate.py), [`scripts/validation.py`](scripts/validation.py); results in [`docs/validation.md`](docs/validation.md) sections 2 to 4 and `public/data/validation.json` |
+| Parameter sensitivity results | [`docs/validation.md`](docs/validation.md) section 5; notebook `validation.ipynb` section 5 |
+| Critical discussion of weaknesses and improvements | [`docs/validation.md`](docs/validation.md) section 6 |
+| Everything step by step, with code and results | [`notebook/analysis.ipynb`](notebook/analysis.ipynb) (Phases 1 and 2), [`notebook/validation.ipynb`](notebook/validation.ipynb) (Phase 3) |
 
 ## Investment universe
 
@@ -61,11 +65,14 @@ The list is in `scripts/config.py`. For a Turkish fund the symbol is its TEFAS f
 | `scripts/clean_data.py` | Step 2: cleans the data → `data/clean/<SYMBOL>.csv` |
 | `scripts/backtest.py` | Step 3: returns and a test of the trend signal on every instrument alone → `public/data/<SYMBOL>.json`, `summary.json` |
 | `scripts/portfolio.py` | Step 4: weekly portfolio weights → `public/data/portfolio.json` |
-| `run_all.py` | Runs the four steps in order |
+| `scripts/simulate.py` | Simulation of a portfolio in lira: orders, fill prices, settlement days, costs, exchange rate (used by step 5) |
+| `scripts/validation.py` | Step 5: strategy against two benchmarks, rolling validation, sensitivity → `public/data/validation.json` |
+| `run_all.py` | Runs the five steps in order |
 | `scripts/describe_data.py` | Writes the instrument table `docs/instruments.csv` |
 | `scripts/runtime_test.py` | Measures the runtime of the algorithm for growing inputs |
-| `docs/` | Data dictionary, instrument table, portfolio rules |
-| `notebook/analysis.ipynb` | All steps explained with code, tables and charts |
+| `docs/` | Data dictionary, instrument table, portfolio rules, validation report |
+| `notebook/analysis.ipynb` | Phases 1 and 2 explained with code, tables and charts |
+| `notebook/validation.ipynb` | Phase 3 explained with code, tables and charts |
 | `app/`, `components/`, `lib/` | Dashboard (Next.js + Tailwind + Recharts) |
 | `.github/workflows/update-data.yml` | GitHub Action that updates the data every day |
 
@@ -134,9 +141,21 @@ The trend signal is also tested on every instrument alone (`scripts/backtest.py`
 ### Assumptions
 
 - All calculations use the adjusted close. For US ETFs it includes dividends and splits; for Turkish funds it is the price published by TEFAS.
-- The portfolio weights are targets. Trading costs, settlement days and the time between a decision and its execution are not simulated in this version.
+- The portfolio weights are targets. Trading costs, settlement days and the time between a decision and its execution are not part of the weights; they are simulated in Phase 3.
 - In the test of one instrument a trade is made at the closing price of the day the signal appears, and returns start on the next trading day. This is a simplification: an order for a mutual fund is filled at the next fund price, and an ETF order after the close is filled on the next trading day (see the data dictionary, section 7). So this test is a first look at the signal and not a simulation of real trading. Bid-ask spread, slippage and taxes are ignored; cash earns no interest.
 - A year is counted as 252 trading days (used for the yearly volatility and the Sharpe ratio).
+
+## Phase 3: historical validation against benchmarks
+
+`scripts/validation.py` simulates the strategy and two benchmarks with the same rules (`scripts/simulate.py`):
+
+- **Benchmarks:** equal weights in all 20 instruments, rebalanced every week (50% Türkiye / 50% United States after every rebalance), and equal weights bought once and then held (the market shares drift with the prices).
+- **Same conditions:** 10,000 lira at the start, reporting in lira, orders on the trading day after the decision at that day's closing price, settlement days of every instrument, 0.1% commission on every trade and 0.2% exchange cost on every US trade, cash without interest.
+- **Rolling validation:** a setting (trend and volatility windows) is chosen on the last 52 weeks with the data known at that time, used for the next 26 weeks, and the windows move forward. No random splits.
+- **Sensitivity:** the strategy with 17 other settings and cost levels.
+- **Checks:** the buy-and-hold value is compared with a formula that can be checked by hand, and the values do not change when later prices are removed.
+
+The method, all tables and the discussion of the weaknesses are in [`docs/validation.md`](docs/validation.md). These results are development and validation evidence, not an untouched final test: the real-time competition is the test on new data.
 
 ## The dashboard
 
@@ -161,7 +180,7 @@ pip install -r requirements.txt
 python run_all.py
 ```
 
-`run_all.py` downloads the data, cleans it, tests the signal on every instrument, computes the portfolio weights and writes the JSON files again. It takes two to three minutes, most of it waiting between TEFAS requests. The steps can also be run one by one: `python scripts/fetch_data.py`, `python scripts/clean_data.py`, `python scripts/backtest.py`, `python scripts/portfolio.py`.
+`run_all.py` downloads the data, cleans it, tests the signal on every instrument, computes the portfolio weights, compares the portfolio with the benchmarks and writes the JSON files again. It takes two to three minutes, most of it waiting between TEFAS requests. The steps can also be run one by one: `python scripts/fetch_data.py`, `python scripts/clean_data.py`, `python scripts/backtest.py`, `python scripts/portfolio.py`, `python scripts/validation.py`.
 
 ```bash
 python scripts/describe_data.py   # writes docs/instruments.csv again
@@ -171,7 +190,8 @@ python scripts/runtime_test.py    # measures the runtime of the algorithm
 **Notebook**
 
 ```bash
-jupyter notebook notebook/analysis.ipynb
+jupyter notebook notebook/analysis.ipynb     # Phases 1 and 2
+jupyter notebook notebook/validation.ipynb   # Phase 3
 ```
 
 **Dashboard** (Node.js 20.9 or newer)
@@ -191,7 +211,7 @@ From GitHub's servers a TEFAS request that comes soon after another one gets no 
 
 ## Results so far
 
-These results use prices until October 9, 2026. The data is updated every day, so the numbers on the site change over time.
+The results of Phases 1 and 2 use prices until October 9, 2026, the results of Phase 3 prices until November 5, 2026. The data is updated every day, so the numbers on the site change over time.
 
 **Phase 1: the data**
 
@@ -222,7 +242,22 @@ These results use prices until October 9, 2026. The data is updated every day, s
 - The Turkish funds were in an uptrend in 97% of all weeks, the US ETFs in 74%. Five of the ten Turkish funds were in an uptrend in every single week. Because lira prices rise with inflation, the trend filter almost never removes a Turkish fund.
 - Because of the 10% floor, all calm lira funds get almost the same weight, so the volatility signal does not separate them.
 - Cash was never used, so the cash rule has not been tested by the data.
-- These results describe weights only. They do not show whether the portfolio earns more than a simple one. Phase 3 compares it with two equal-weight benchmarks, with trading costs and with the real trading rules of each instrument.
+- These results describe weights only. They do not show whether the portfolio earns more than a simple one. Phase 3 (below) compares it with two equal-weight benchmarks, with trading costs and with the real trading rules of each instrument.
+
+**Phase 3: against the benchmarks** (August 29, 2022 to November 5, 2026, 10,000 lira, after costs)
+
+| | Strategy | Equal weights, weekly | Equal weights, buy and hold |
+|---|---:|---:|---:|
+| Total return in lira | 373.72% | 400.48% | 389.73% |
+| Yearly volatility | 9.04% | 11.62% | 14.08% |
+| Maximum drawdown | −6.22% | −9.43% | −16.52% |
+| Sharpe ratio (risk-free rate 0) | 4.16 | 3.37 | 2.77 |
+| Total return in US dollars | 72.11% | 81.84% | 77.93% |
+
+- The strategy was calmer than both benchmarks but did not earn more. In the rolling validation the benchmarks also returned more over all test windows (169% for the strategy against 188% to 191%), and choosing the setting on the past was worse than keeping one fixed setting in five of seven windows.
+- Lira interest rates were very high: the lira money market fund DLY alone returned 373.42% in the same period. Measured against that, the strategy added nothing.
+- The volatility floor decides most of the result, because it sets how much goes to the calm lira funds. The trend and volatility windows change the total return only between 338% and 384%.
+- Details and ideas for improvement: [`docs/validation.md`](docs/validation.md).
 
 ## Notes
 

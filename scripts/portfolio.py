@@ -43,7 +43,8 @@ def compute_signals(prices):
         trend[symbol] = data["signal"]  # 1: the short average is above the long one, 0: it is not
         daily_return = data["price"].pct_change()
         volatility[symbol] = daily_return.rolling(config.VOL_WINDOW).std() * np.sqrt(config.TRADING_DAYS)
-        ready.append(data["sma_long"].first_valid_index())  # first day with a long average
+        # first day with both a long average and a volatility
+        ready.append(max(data["sma_long"].first_valid_index(), volatility[symbol].first_valid_index()))
 
     # Put all instruments on one calendar. The two markets have different holidays: a day
     # without a price gets the last known signal, so only past information is used.

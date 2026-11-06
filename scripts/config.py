@@ -53,6 +53,7 @@ TEFAS_MONTHS = 60          # TEFAS gives at most the last 60 months (5 years)
 SMA_SHORT = 50             # short moving average (days)
 SMA_LONG = 200             # long moving average (days)
 COMMISSION = 0.001         # 0.1% commission on every trade
+FX_COST = 0.002            # 0.2% cost of changing lira into dollars or back (portfolio simulation)
 INITIAL_CAPITAL = 10_000   # starting capital (in the currency of the instrument)
 TRADING_DAYS = 252         # trading days in a year (turns daily values into yearly values)
 

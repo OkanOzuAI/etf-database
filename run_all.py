@@ -1,4 +1,4 @@
-"""Runs the whole pipeline in order: download -> clean -> backtest -> portfolio.
+"""Runs the whole pipeline in order: download -> clean -> backtest -> portfolio -> validation.
 
 Usage:  python run_all.py
 """
@@ -12,10 +12,11 @@ import backtest
 import clean_data
 import fetch_data
 import portfolio
+import validation
 
 
 def main():
-    print("1/4 Downloading data")
+    print("1/5 Downloading data")
     failed = fetch_data.main()
     if failed:
         # Stop with an error code if something is missing, so the automatic update
@@ -23,14 +24,17 @@ def main():
         print(f"WARNING: could not be downloaded: {', '.join(failed)}")
         sys.exit(1)
 
-    print("2/4 Cleaning data")
+    print("2/5 Cleaning data")
     clean_data.main()
 
-    print("3/4 Running the backtest of every instrument")
+    print("3/5 Running the backtest of every instrument")
     backtest.main()
 
-    print("4/4 Computing the portfolio weights")
+    print("4/5 Computing the portfolio weights")
     portfolio.main()
+
+    print("5/5 Comparing the portfolio with the benchmarks (historical validation)")
+    validation.main()
     print("Done.")
 
 
