@@ -138,19 +138,20 @@ def walk_forward(prices, data):
 
 
 def check_no_future_data(prices, cut="2025-06-30"):
-    """Shows that the simulation does not use prices that come after a day.
+    """Shows that the simulation does not use prices or rates that come after a day.
 
-    Everything is computed again with the data cut at `cut`. The values must be the same
-    as with the full data until a week before the cut (the last decisions before the cut
-    are traded and valued with prices of the following days).
+    Everything is computed again as if the data had been downloaded on `cut`: every price
+    file and the exchange rate file end on that day. The values must be the same as with
+    the full data until the day before the cut (the value of the cut day itself needs the
+    exchange rate of the next day).
     """
     cut = pd.Timestamp(cut)
     short = {symbol: price.loc[:cut] for symbol, price in prices.items()}
     full = simulate.simulate(strategy_weights(prices, {}), simulate.prepare())["value"]
-    part = simulate.simulate(strategy_weights(short, {}), simulate.prepare(last_day=cut + pd.Timedelta(days=1)))["value"]
-    until = cut - pd.Timedelta(days=7)
+    part = simulate.simulate(strategy_weights(short, {}), simulate.prepare(last_day=cut))["value"]
+    until = cut - pd.Timedelta(days=1)
     difference = (full.loc[:until] - part.loc[:until]).abs().max()
-    assert difference < 1e-9, f"the values before {until.date()} depend on later prices"
+    assert difference < 1e-9, f"the values before {cut.date()} depend on later prices"
     return float(difference)
 
 

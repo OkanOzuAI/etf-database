@@ -152,7 +152,7 @@ The trend signal is also tested on every instrument alone (`scripts/backtest.py`
 - **Benchmarks:** equal weights in all 20 instruments, rebalanced every week (50% Türkiye / 50% United States after every rebalance), and equal weights bought once and then held (the market shares drift with the prices).
 - **Same conditions:** 10,000 lira at the start, reporting in lira, orders on the trading day after the decision at that day's closing price, settlement days of every instrument, 0.1% commission on every trade and 0.2% exchange cost on every US trade, cash without interest.
 - **Rolling validation:** a setting (trend and volatility windows) is chosen on the last 52 weeks with the data known at that time, used for the next 26 weeks, and the windows move forward. No random splits.
-- **Sensitivity:** the strategy with 17 other settings and cost levels.
+- **Sensitivity:** the strategy with 16 other settings and cost levels.
 - **Checks:** the buy-and-hold value is compared with a formula that can be checked by hand, and the values do not change when later prices are removed.
 
 The method, all tables and the discussion of the weaknesses are in [`docs/validation.md`](docs/validation.md). These results are development and validation evidence, not an untouched final test: the real-time competition is the test on new data.
@@ -254,7 +254,7 @@ The results of Phases 1 and 2 use prices until October 9, 2026, the results of P
 | Sharpe ratio (risk-free rate 0) | 4.16 | 3.37 | 2.77 |
 | Total return in US dollars | 72.11% | 81.84% | 77.93% |
 
-- The strategy was calmer than both benchmarks but did not earn more. In the rolling validation the benchmarks also returned more over all test windows (169% for the strategy against 188% to 191%), and choosing the setting on the past was worse than keeping one fixed setting in five of seven windows.
+- The strategy was calmer than both benchmarks but did not earn more. In the rolling validation the benchmarks also returned more over all test windows (171% for the strategy against 188% to 191%), and choosing the setting on the past was worse than keeping one fixed setting in five of seven windows.
 - Lira interest rates were very high: the lira money market fund DLY alone returned 373.42% in the same period. Measured against that, the strategy added nothing.
 - The volatility floor decides most of the result, because it sets how much goes to the calm lira funds. The trend and volatility windows change the total return only between 338% and 384%.
 - Details and ideas for improvement: [`docs/validation.md`](docs/validation.md).

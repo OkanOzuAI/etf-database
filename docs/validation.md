@@ -22,7 +22,7 @@ The strategy and both benchmarks go through the same function (`simulate` in `sc
 | Initial capital | 10,000 Turkish lira (`INITIAL_CAPITAL`), all in cash before the first order |
 | Reporting currency | Turkish lira. US ETFs are valued as dollar price × USD/TRY rate |
 | Prices | adjusted closing prices of the US ETFs (dividends included); TEFAS prices of the Turkish funds, moved back by one business day to the market day they come from |
-| Exchange rate | for the US close of day D, the first USD/TRY value dated after D (Yahoo takes the value of a day in its first hours, London time, so this is the value closest in time to the US close) |
+| Exchange rate | for the US close of day D, the first USD/TRY value dated after D (Yahoo takes the value of a day in its first hours, London time, so this is the value closest in time to the US close). On the last day of the data there is no later value yet; then the value dated that day is used |
 | Decision | every Friday, with the prices known on that day (Phase 2) |
 | Orders | on the next day on which both markets are open (normally Monday) |
 | Fill price | the closing price of the order day, which is not known when the decision is made. For a Turkish mutual fund this is the price calculated at the end of the order day |
@@ -66,13 +66,13 @@ The strategy held on average **60.48% in Türkiye, 39.20% in the United States a
 | Turnover per year (value traded / average value) | 2.86 | 1.02 | 0.08 |
 | Costs paid (lira) | 648.05 | 241.64 | 19.95 |
 
-For comparison: in the same period the lira money market fund **DLY alone returned 373.42%** (45.01% per year) with almost no price changes, and the US dollar rose from 18.18 to 50.04 lira.
+For comparison: in the same period the lira money market fund **DLY alone returned 373.42%** (about 45% per year) with almost no price changes, and the US dollar rose from 18.18 to 50.04 lira.
 
 ## 4. Rolling validation
 
 **Method.** The data gives 219 weekly decisions. The validation goes through them in time order; there is no random split.
 
-1. **Training window:** 52 weeks. Each of 9 settings (trend windows 20/100, 50/150, 50/200 days × volatility windows 21, 63, 126 days) is simulated on these weeks, with the prices known before the first test decision only. The setting with the highest Sharpe ratio is chosen.
+1. **Training window:** 52 weeks. Each of 9 settings (trend windows 20/100, 50/150, 50/200 days × volatility windows 21, 63, 126 days) is simulated on these weeks, with only the price and rate data published until the day before the first test decision. The setting with the highest Sharpe ratio is chosen.
 2. **Test window:** the next 26 weeks use the chosen setting.
 3. The windows move forward by 26 weeks and the steps are repeated.
 
@@ -86,27 +86,27 @@ The signals of every week are computed only from prices up to that Friday (Phase
 | 2024-02-23 to 2024-08-16 | SMA 50/150, vol 21 days | 20.83% | 21.35% | 22.43% | 21.91% |
 | 2024-08-23 to 2025-02-14 | SMA 50/200, vol 63 days | 12.91% | 12.90% | 12.68% | 12.87% |
 | 2025-02-21 to 2025-08-15 | SMA 50/150, vol 63 days | 17.02% | 17.34% | 21.94% | 21.58% |
-| 2025-08-22 to 2026-02-13 | SMA 20/100, vol 21 days | 25.15% | 25.84% | 32.51% | 37.51% |
-| 2026-02-20 to 2026-08-14 | SMA 20/100, vol 21 days | 10.88% | 10.51% | 10.20% | 7.22% |
+| 2025-08-22 to 2026-02-13 | SMA 20/100, vol 126 days | 25.81% | 25.84% | 32.51% | 37.51% |
+| 2026-02-20 to 2026-08-14 | SMA 20/100, vol 21 days | 10.97% | 10.51% | 10.20% | 7.22% |
 | 2026-08-21 to 2026-10-30 | SMA 20/100, vol 21 days | −0.59% | −0.42% | −5.08% | −6.07% |
 
 **All test windows together** (August 28, 2023 to November 5, 2026):
 
 | | Walk-forward | Fixed setting | Equal weights, weekly | Buy and hold |
 |---|---:|---:|---:|---:|
-| Total return | 169.05% | 174.12% | 190.67% | 188.38% |
-| Yearly return (CAGR) | 36.38% | 37.18% | 39.73% | 39.38% |
-| Yearly volatility | 7.52% | 7.76% | 10.77% | 13.12% |
-| Sharpe ratio (risk-free rate 0) | 4.17 | 4.12 | 3.17 | 2.60 |
+| Total return | 170.70% | 174.12% | 190.67% | 188.38% |
+| Yearly return (CAGR) | 36.64% | 37.18% | 39.73% | 39.38% |
+| Yearly volatility | 7.60% | 7.76% | 10.77% | 13.12% |
+| Sharpe ratio (risk-free rate 0) | 4.16 | 4.12 | 3.17 | 2.60 |
 | Maximum drawdown | −6.34% | −6.22% | −9.43% | −15.73% |
-| Total return in US dollars | 41.46% | 44.13% | 52.83% | 51.63% |
-| Turnover per year | 5.53 | 2.87 | 1.09 | 0.16 |
+| Total return in US dollars | 42.33% | 44.13% | 52.83% | 51.63% |
+| Turnover per year | 5.16 | 2.87 | 1.09 | 0.16 |
 
 **What this shows**
 
 - The strategy was more stable than both benchmarks in every view: lower volatility, a smaller drawdown and a higher Sharpe ratio. It lost much less in the falling market of the last window.
-- It did **not** earn more. In four of the seven windows both benchmarks returned more, and over all test windows the benchmarks returned 14 to 22 percentage points more.
-- Choosing the setting on the training window did **not** help. The walk-forward strategy was behind the fixed setting in five of seven windows, and the chosen setting changed four times. The differences between the settings in training are small and do not continue in the next window, so they are mostly noise. Changing the setting also doubled the turnover.
+- It did **not** earn more. In four of the seven windows both benchmarks returned more, and over all test windows the benchmarks returned 14 to 20 percentage points more.
+- Choosing the setting on the training window did **not** help. The walk-forward strategy was behind the fixed setting in five of seven windows, and the chosen setting changed five times. The differences between the settings in training are small and do not continue in the next window, so they are mostly noise. Changing the setting also almost doubled the turnover.
 
 ## 5. Parameter sensitivity
 
@@ -173,5 +173,5 @@ cd scripts && python validation.py    # only the validation, with the data alrea
 The script checks itself and stops with an error if a check fails:
 
 - **Buy-and-hold formula:** the value of the buy-and-hold benchmark is computed again with a formula that can be checked by hand, value(t) = Σ capital / 20 × price(t) / (price at purchase × (1 + cost)). The two results differ by less than 0.000001 lira.
-- **No future data:** everything is computed again with the data cut at June 30, 2025. The portfolio values until a week before that day are exactly the same as with the full data.
+- **No future data:** everything is computed again as if the data had been downloaded on June 30, 2025 (every price file and the exchange rate file end on that day). The portfolio values until the day before are exactly the same as with the full data. We also tested the check itself: with a deliberate error that lets the Turkish prices of the next day into the simulation, it stops with an error.
 - **Portfolio rules:** every week of every setting is checked with the Phase 2 rules (no negative weight, limits, sum 100%), and the simulation stops if cash becomes negative.

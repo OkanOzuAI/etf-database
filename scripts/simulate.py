@@ -30,7 +30,7 @@ SYMBOLS = list(config.SYMBOLS)
 MARKET = np.array([config.SYMBOLS[symbol]["market"] for symbol in SYMBOLS])
 
 
-def market_prices():
+def market_prices(last_day=None):
     """Reads the price of every instrument and puts it on the day of the market close it comes from.
 
     US ETFs: the adjusted close of the US trading day.
@@ -38,39 +38,44 @@ def market_prices():
     so every price is moved back to the row before it.
     Returns a DataFrame with one row for every day on which at least one market was open,
     and NaN where the market of an instrument was closed.
+    If last_day is given, only the rows of the files dated up to that day are used.
     """
     columns = {}
     for symbol in SYMBOLS:
-        price = backtest.load_clean(symbol)["adj_close"]
+        price = backtest.load_clean(symbol)["adj_close"].loc[:last_day]
         if config.SYMBOLS[symbol]["market"] == TURKEY:
             price = pd.Series(price.values[1:], index=price.index[:-1])  # row i comes from the day of row i-1
         columns[symbol] = price
     return pd.DataFrame(columns).sort_index()
 
 
-def rate_after_us_close(days):
+def rate_after_us_close(days, last_day=None):
     """USD/TRY rate for every day: the first value dated after that day.
 
     Yahoo takes the value of day D in the first hours of day D (London time), so the value
     dated D+1 is the first one after the US close of day D. For the last day of the data
     there is no later value yet; then the last known value is used.
+    If last_day is given, only the rows of the file dated up to that day are used.
     """
-    rate = backtest.load_clean(config.FX_NAME)["adj_close"]
+    rate = backtest.load_clean(config.FX_NAME)["adj_close"].loc[:last_day]
     following = pd.Series(rate.values[1:], index=rate.index[:-1])  # the value of the next row
     following = pd.concat([following, rate.iloc[-1:]])             # the last day keeps its own value
     return following.asof(days)
 
 
 def prepare(last_day=None):
-    """Loads everything the simulation needs, up to last_day if it is given.
+    """Loads everything the simulation needs.
+
+    If last_day is given, only the rows of the price and rate files dated up to that day
+    are used, as if the data had been downloaded on that day.
 
     Returns a dictionary with:
     - own: prices in the currency of each instrument (NaN on days its market is closed),
     - lira: the same prices in lira, with the last price carried over closed days,
     - usdtry: the rate used for each day.
     """
-    own = market_prices().loc[:last_day]
-    usdtry = rate_after_us_close(own.index)
+    own = market_prices(last_day)
+    usdtry = rate_after_us_close(own.index, last_day)
     lira = own.ffill()
     for symbol in SYMBOLS:
         if config.SYMBOLS[symbol]["market"] == US:
