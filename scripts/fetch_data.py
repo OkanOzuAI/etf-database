@@ -149,6 +149,16 @@ def fetch_symbol(symbol, source="yahoo"):
     return None
 
 
+def download(name, symbol, source):
+    """Downloads one instrument and saves it as data/raw/<name>.csv. Returns True if it worked."""
+    df = fetch_symbol(symbol, source)
+    if df is not None:
+        df.to_csv(config.RAW_DIR / f"{name}.csv", index=False)
+    # Short pause so we do not overload the server (TEFAS allows fewer requests per minute)
+    time.sleep(config.TEFAS_SLEEP_SECONDS if source == "tefas" else config.SLEEP_SECONDS)
+    return df is not None
+
+
 def main():
     """Downloads every instrument and the exchange rate. Returns the list of names that failed."""
     config.RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -159,14 +169,17 @@ def main():
 
     failed = []
     for name, symbol, source in downloads:
-        df = fetch_symbol(symbol, source)
-        if df is None:
-            failed.append(name)  # skip this one and continue with the others
-        else:
-            df.to_csv(config.RAW_DIR / f"{name}.csv", index=False)
-        # Short pause so we do not overload the server (TEFAS allows fewer requests per minute)
-        time.sleep(config.TEFAS_SLEEP_SECONDS if source == "tefas" else config.SLEEP_SECONDS)
-    return failed
+        if not download(name, symbol, source):
+            failed.append((name, symbol, source))  # skip this one and continue with the others
+
+    # A source that did not answer often answers again some minutes later (TEFAS does this
+    # from GitHub's servers). So every download that failed is tried once more at the end.
+    still_failed = []
+    for name, symbol, source in failed:
+        print(f"  Second try: {name}")
+        if not download(name, symbol, source):
+            still_failed.append(name)
+    return still_failed
 
 
 if __name__ == "__main__":
