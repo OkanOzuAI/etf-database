@@ -2,9 +2,10 @@ import type { View } from "@/lib/types";
 import AdviceNote from "./AdviceNote";
 import Segmented from "./Segmented";
 
-// ---- The five views and their tab names ----
+// ---- The six views and their tab names ----
 const VIEWS: { value: View; label: string }[] = [
   { value: "portfolio", label: "Portfolio" },
+  { value: "validation", label: "Validation" },
   { value: "overview", label: "Funds" },
   { value: "compare", label: "Compare" },
   { value: "details", label: "Details" },
@@ -47,9 +48,9 @@ export default function TopBar({ view, onChange }: Props) {
           <AdviceNote />
         </div>
 
-        {/* ---- View tabs: on a phone they get their own full-width row ---- */}
+        {/* ---- View tabs: on a phone they get their own full width, in two rows of three ---- */}
         <nav aria-label="Views" className="order-3 w-full sm:order-2 sm:w-auto">
-          <Segmented label="View" options={VIEWS} value={view} onChange={onChange} />
+          <Segmented label="View" options={VIEWS} value={view} onChange={onChange} phoneRows />
         </nav>
       </div>
     </header>

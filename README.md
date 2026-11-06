@@ -159,9 +159,10 @@ The method, all tables and the discussion of the weaknesses are in [`docs/valida
 
 ## The dashboard
 
-The site has five views:
+The site has six views:
 
 - **Portfolio:** the last weekly decision: the target weight of every fund, the total of each market and the cash, and how the market shares changed over time.
+- **Validation:** the historical validation of Phase 3: the value of the strategy and of the two benchmarks after costs, the results over the whole period, the rolling validation, the parameter sensitivity, the checks and the known weaknesses.
 - **Funds:** one table with all instruments: last price, trailing returns, the test of the trend signal against Buy & Hold and the current signal label.
 - **Compare:** pick up to five instruments and see them on the same chart. Every line starts at 100 on the first day of the selected date range.
 - **Details:** one instrument in detail: price with the two moving averages, portfolio value of the signal test and of Buy & Hold, metric table, period returns and yearly returns.

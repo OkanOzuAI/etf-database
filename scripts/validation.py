@@ -53,11 +53,18 @@ def use_settings(settings):
             setattr(config, name, value)
 
 
+# Readable names of the settings that are changed one at a time
+NAMES = {"MAX_WEIGHT": "Limit per instrument", "MIN_MARKET_WEIGHT": "Minimum per market", "VOL_FLOOR": "Volatility floor"}
+
+# The lira money market fund: the portfolio is also compared with simply holding it
+MONEY_MARKET = "DLY"
+
+
 def label(settings):
-    """Short name of a setting, for example 'SMA 50/200, vol 63 days'."""
+    """Short name of a setting, for example 'SMA 50/200, vol 63 days' or 'Limit per instrument 15%'."""
     if "SMA_SHORT" in settings:
         return f"SMA {settings['SMA_SHORT']}/{settings['SMA_LONG']}, vol {settings['VOL_WINDOW']} days"
-    return ", ".join(f"{name} = {value}" for name, value in settings.items())
+    return ", ".join(f"{NAMES[name]} {value:.0%}" for name, value in settings.items())
 
 
 def strategy_weights(prices, settings):
@@ -209,9 +216,13 @@ def main():
     for settings in GRID + ONE_AT_A_TIME:
         result = simulate.simulate(strategy_weights(prices, settings).loc[first_week:], data)
         sensitivity.append({"setting": label(settings), "default": settings == DEFAULT, **simulate.metrics(result)})
-    for name, commission, fx_cost in [("no costs", 0.0, 0.0), ("double costs", 2 * config.COMMISSION, 2 * config.FX_COST)]:
+    for name, commission, fx_cost in [("No costs", 0.0, 0.0), ("Double costs", 2 * config.COMMISSION, 2 * config.FX_COST)]:
         result = simulate.simulate(strategy, data, commission=commission, fx_cost=fx_cost)
         sensitivity.append({"setting": name, "default": False, **simulate.metrics(result)})
+
+    # ---- 4) For comparison: the money market fund alone, bought on the first order day (no costs) ----
+    start_day = whole["Strategy"]["value"].index[0]
+    money_market = data["own"][MONEY_MARKET].dropna().loc[start_day:]
 
     backtest.write_json(
         config.OUTPUT_DIR / "validation.json",
@@ -233,6 +244,13 @@ def main():
             },
             "rolling": {"folds": folds, "metrics": tested_metrics},
             "sensitivity": sensitivity,
+            "money_market": {
+                "symbol": MONEY_MARKET,
+                "name": config.SYMBOLS[MONEY_MARKET]["name"],
+                "start": money_market.index[0].strftime("%Y-%m-%d"),
+                "end": money_market.index[-1].strftime("%Y-%m-%d"),
+                "total_return_pct": round(float((money_market.iloc[-1] / money_market.iloc[0] - 1) * 100), 2),
+            },
             "checks": checks,
         },
     )

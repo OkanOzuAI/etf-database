@@ -2,13 +2,14 @@
 // "use client": this file and the components it imports run in the browser (useState, useEffect, fetch).
 
 import { useEffect, useRef, useState } from "react";
-import type { DateRange, Mode, Portfolio, Summary, SymbolData, SymbolFiles, SymbolSummary, View } from "@/lib/types";
+import type { DateRange, Mode, Portfolio, Summary, SymbolData, SymbolFiles, SymbolSummary, Validation, View } from "@/lib/types";
 import Compare from "./Compare";
 import Details from "./Details";
 import Method from "./Method";
 import Overview from "./Overview";
 import PortfolioView from "./PortfolioView";
 import TopBar from "./TopBar";
+import ValidationView from "./ValidationView";
 
 const MAX_PICKS = 5; // Compare: one colour slot per picked symbol (--series-1 ... --series-5)
 const DEFAULT_PICKS = ["SPY", "QQQ", "GLD", "TLT"]; // Compare: the symbols picked at the start
@@ -60,7 +61,7 @@ export default function Dashboard() {
   return <Site summary={summary} portfolio={portfolio} />;
 }
 
-// The site: top bar and the five views. It keeps everything the views share:
+// The site: top bar and the six views. It keeps everything the views share:
 // the open view, the date range, the picked symbols and the loaded symbol files.
 function Site({ summary, portfolio }: { summary: Summary; portfolio: Portfolio }) {
   const { symbols } = summary;
@@ -80,6 +81,7 @@ function Site({ summary, portfolio }: { summary: Summary; portfolio: Portfolio }
   const [selected, setSelected] = useState(symbols[0].symbol); // Details: the chosen symbol
   const [previous, setPrevious] = useState(selected); // Details: the symbol shown before the chosen one
   const [files, setFiles] = useState<SymbolFiles>({}); // loaded <SYMBOL>.json files, kept in memory
+  const [validation, setValidation] = useState<Validation | null>(null); // validation.json, loaded when its view opens
   const [failed, setFailed] = useState(false); // could a file not be loaded?
   const requested = useRef(new Set<string>()); // symbols whose file was already requested
 
@@ -97,6 +99,15 @@ function Site({ summary, portfolio }: { summary: Summary; portfolio: Portfolio }
         .catch(() => setFailed(true));
     }
   }, [view, slots, selected]);
+
+  // ---- Load validation.json the first time the Validation view opens ----
+  useEffect(() => {
+    if (view !== "validation" || requested.current.has("validation.json")) return;
+    requested.current.add("validation.json");
+    loadJson<Validation>("/data/validation.json")
+      .then(setValidation)
+      .catch(() => setFailed(true));
+  }, [view]);
 
   // ---- Actions ----
 
@@ -145,6 +156,7 @@ function Site({ summary, portfolio }: { summary: Summary; portfolio: Portfolio }
             }}
           />
         )}
+        {!failed && view === "validation" && (validation ? <ValidationView validation={validation} /> : <p>Loading data…</p>)}
         {!failed && view === "overview" && (
           <Overview
             summary={summary}

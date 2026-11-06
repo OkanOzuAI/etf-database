@@ -141,10 +141,70 @@ export type Portfolio = {
   history: PortfolioWeek[];
 };
 
+// ---- validation.json (Phase 3, written by scripts/validation.py) ----
+
+// Results of one simulated portfolio. Values in lira, returns and shares in percent.
+export type ValidationMetrics = {
+  start: string; // first day with a value (the first order day)
+  end: string; // last day with a value
+  final_value: number;
+  total_return_pct: number;
+  cagr_pct: number; // yearly return
+  volatility_pct: number; // yearly volatility
+  sharpe: number; // Sharpe ratio with a risk-free rate of 0
+  max_drawdown_pct: number; // largest fall from a previous high (negative)
+  total_return_usd_pct: number; // the same portfolio counted in US dollars
+  turnover_per_year: number; // value traded per year / average value
+  costs: number; // commission and exchange costs paid (lira)
+  average_share_pct: MarketTotals; // share of each market and of cash, average of all days
+  last_share_pct: MarketTotals; // the same on the last day
+};
+
+// One step of the rolling validation
+export type ValidationFold = {
+  train: [string, string]; // first and last decision day used to choose the setting
+  test: [string, string]; // first and last decision day of the test window
+  chosen: string; // the setting chosen on the training window
+  train_sharpe: number;
+  default_train_sharpe: number;
+  returns_pct: Record<string, number>; // return of every portfolio in the test window
+};
+
+// One row of the sensitivity table: a setting and the results of the strategy with it
+export type SensitivityRow = ValidationMetrics & {
+  setting: string;
+  default: boolean; // true for the setting in config.py
+};
+
+export type Validation = {
+  updated_at: string;
+  version: string;
+  assumptions: {
+    initial_capital: number;
+    report_currency: string;
+    commission: number; // a rate: 0.001 = 0.1%
+    fx_cost: number; // a rate, on every trade of a US ETF
+    train_weeks: number;
+    test_weeks: number;
+  };
+  whole_period: Record<string, ValidationMetrics>; // "Strategy" and the two benchmarks
+  whole_period_values: Record<string, Record<string, number>>; // weekly value of each portfolio: date -> lira
+  rolling: {
+    folds: ValidationFold[];
+    metrics: Record<string, ValidationMetrics>; // all test windows together
+  };
+  sensitivity: SensitivityRow[];
+  money_market: { symbol: string; name: string; start: string; end: string; total_return_pct: number };
+  checks: {
+    buy_and_hold_formula_difference: number; // lira
+    future_data_difference: number; // lira
+  };
+};
+
 // ---- Page ----
 
-// The five views of the page
-export type View = "portfolio" | "overview" | "compare" | "details" | "method";
+// The six views of the page
+export type View = "portfolio" | "validation" | "overview" | "compare" | "details" | "method";
 
 // Which portfolio the Compare view shows. The names are also the field names in the JSON.
 export type Mode = "buy_hold" | "strategy";

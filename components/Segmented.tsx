@@ -8,15 +8,17 @@ type Props<T> = {
   options: Option<T>[];
   value: T | null; // the selected option (null: none is selected)
   onChange: (value: T) => void;
+  phoneRows?: boolean; // on a phone, put the options in rows of three instead of one row that scrolls
 };
 
 // A row of buttons where one is selected. Used for the view tabs, the range presets,
 // the group filter, the Compare mode and the period tabs.
 // T is the type of the option values, so onChange gives back exactly one of them.
-export default function Segmented<T extends string>({ label, options, value, onChange }: Props<T>) {
+export default function Segmented<T extends string>({ label, options, value, onChange, phoneRows = false }: Props<T>) {
+  const layout = phoneRows ? "grid grid-cols-3 sm:flex" : "flex";
   return (
     // On a narrow screen the row scrolls sideways inside its own box instead of the page.
-    <div role="group" aria-label={label} className="flex max-w-full gap-0.5 overflow-x-auto rounded-xl bg-track p-1">
+    <div role="group" aria-label={label} className={`${layout} max-w-full gap-0.5 overflow-x-auto rounded-xl bg-track p-1`}>
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -25,7 +27,7 @@ export default function Segmented<T extends string>({ label, options, value, onC
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(option.value)}
-            // A little less side padding on a phone, so that the five view tabs fit in one row.
+            // A little less side padding on a phone, so that more buttons fit in one row.
             className={`flex-1 rounded-lg px-2 py-1.5 text-sm whitespace-nowrap transition-colors sm:px-3 ${
               selected ? "bg-thumb font-semibold text-accent shadow-sm" : "text-ink-2 hover:text-ink"
             }`}

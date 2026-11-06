@@ -57,6 +57,13 @@ export default function PortfolioView({ portfolio, onOpenSymbol, onOpenView }: P
           </button>
           <button
             type="button"
+            onClick={() => onOpenView("validation")}
+            className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors hover:bg-hover"
+          >
+            Results against benchmarks
+          </button>
+          <button
+            type="button"
             onClick={() => onOpenView("method")}
             className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors hover:bg-hover"
           >
